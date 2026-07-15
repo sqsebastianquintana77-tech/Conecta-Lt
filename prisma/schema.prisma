@@ -3,65 +3,65 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-model Business {
-  id          String   @id @default(cuid())
-  name        String
-  slug        String   @unique
-  category    String   // LICORERIA | TASCA | BODEGON
-  subcategory String?
-  zone        String   // Centro, La Hoyada, San Pedro, El Trapiche, etc.
-  address     String?
-  phone       String?
-  whatsapp    String?
-  instagram   String?
-  website     String?
-  hours       String?  // "Lun-Sab 9:00-21:00"
-  happyHour   String?  // "Lun-Vie 17:00-19:00"
-  priceRange  String   // $ | $$ | $$$
-  hasDelivery Boolean  @default(false)
-  petFriendly Boolean  @default(false)
-  hasReservations Boolean @default(false)
-  specialty   String?  // "Ron, whisky, cerveza artesanal"
-  topBrands   String?  // "Santa Teresa, Diplomatico, Polar"
-  description String?
-  rating      Float    @default(0)
-  reviewCount Int      @default(0)
-  verified    Boolean  @default(false)
-  featured    Boolean  @default(false)
-  image       String?
-  gallery     String?  // JSON array of image URLs
-  latitude    Float?
-  longitude   Float?
-  tags        String?  // JSON array of tags
-  promotions Promotion[]
-  reviews     Review[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
 }
 
-model Promotion {
-  id          String   @id @default(cuid())
-  title       String
-  description String?
-  discount    String?  // "10%", "2x1"
-  businessId  String
-  business    Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  active      Boolean  @default(true)
-  startsAt    DateTime?
-  endsAt      DateTime?
-  createdAt   DateTime @default(now())
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  reviews       Review[]
+  createdAt     DateTime  @default(now())
 }
 
 model Review {
   id          String   @id @default(cuid())
-  businessId  String
-  business    Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  author      String?
-  rating      Int      // 1-5
+  businessSlug String
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  authorName  String
+  rating      Int
   comment     String?
   createdAt   DateTime @default(now())
+
+  @@index([businessSlug])
 }
