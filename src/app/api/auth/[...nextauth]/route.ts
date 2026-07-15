@@ -1,5 +1,6 @@
 import NextAuth, { type NextAuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
+import { supabase } from '@/lib/supabase';
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -27,29 +28,17 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
-    async signIn({ user, account }) {
+    async signIn({ user }) {
       if (!user?.email) return false;
-      if (account?.provider === 'google') {
-        try {
-          const { db } = await import('@/lib/prisma');
-          await db.user.upsert({
-            where: { email: user.email },
-            update: {
-              name: user.name,
-              image: user.image,
-              emailVerified: new Date(),
-            },
-            create: {
-              email: user.email,
-              name: user.name,
-              image: user.image,
-              emailVerified: new Date(),
-            },
-          });
-        } catch {
-          // If DB is not available, still allow login
-          console.warn('DB not available, skipping user upsert');
-        }
+      try {
+        await supabase.from('User').upsert({
+          email: user.email,
+          name: user.name,
+          image: user.image,
+          emailVerified: new Date().toISOString(),
+        }, { onConflict: 'email' });
+      } catch {
+        console.warn('Supabase not available, skipping user upsert');
       }
       return true;
     },

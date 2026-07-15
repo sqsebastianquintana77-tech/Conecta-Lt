@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import NextRequest, { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { supabase } from '@/lib/supabase';
 
 // GET /api/reviews?businessSlug=xxx
 export async function GET(request: NextRequest) {
@@ -10,15 +11,16 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const { db } = await import('@/lib/prisma');
-    const reviews = await db.review.findMany({
-      where: { businessSlug: slug },
-      orderBy: { createdAt: 'desc' },
-      take: 50,
-    });
-    return NextResponse.json({ reviews });
+    const { data: reviews, error } = await supabase
+      .from('Review')
+      .select('*')
+      .eq('businessSlug', slug)
+      .order('createdAt', { ascending: false })
+      .limit(50);
+
+    if (error) throw error;
+    return NextResponse.json({ reviews: reviews ?? [] });
   } catch {
-    // If DB not available, return empty
     return NextResponse.json({ reviews: [] });
   }
 }
@@ -41,23 +43,48 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { db } = await import('@/lib/prisma');
+    // Find or create user
+    const { data: existingUser } = await supabase
+      .from('User')
+      .select('id')
+      .eq('email', session.user.email)
+      .single();
 
-    // Find user in DB
-    const user = await db.user.findUnique({
-      where: { email: session.user.email },
-    });
+    let userId = existingUser?.id;
 
-    const review = await db.review.create({
-      data: {
+    if (!userId) {
+      const { data: newUser } = await supabase
+        .from('User')
+        .insert({
+          id: crypto.randomUUID(),
+          email: session.user.email,
+          name: session.user.name,
+          image: session.user.image,
+          emailVerified: new Date().toISOString(),
+        })
+        .select('id')
+        .single();
+      userId = newUser?.id;
+    }
+
+    if (!userId) {
+      return NextResponse.json({ error: 'Error al crear usuario' }, { status: 500 });
+    }
+
+    const { data: review, error } = await supabase
+      .from('Review')
+      .insert({
+        id: crypto.randomUUID(),
         businessSlug,
-        userId: user?.id ?? session.user.email,
+        userId,
         authorName: session.user.name ?? 'Anónimo',
         rating,
         comment: comment?.trim() || null,
-      },
-    });
+      })
+      .select()
+      .single();
 
+    if (error) throw error;
     return NextResponse.json({ review }, { status: 201 });
   } catch (error) {
     console.error('Error creating review:', error);
