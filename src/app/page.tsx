@@ -945,6 +945,13 @@ export default function Home() {
     null
   );
   const [modalOpen, setModalOpen] = useState(false);
+  const [ageVerified, setAgeVerified] = useState(false);
+  const [ageDismissed, setAgeDismissed] = useState(false);
+
+  useEffect(() => {
+    const verified = localStorage.getItem('conecta-lt-age-verified');
+    if (verified === 'true') setAgeVerified(true);
+  }, []);
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -987,8 +994,99 @@ export default function Home() {
   const allPromotions = businesses.filter((b) => b.promotions.length > 0);
   const featuredBusinesses = businesses.filter((b) => b.featured);
 
+  const handleAgeVerify = (isAdult: boolean) => {
+    if (isAdult) {
+      localStorage.setItem('conecta-lt-age-verified', 'true');
+      setAgeVerified(true);
+    } else {
+      setAgeDismissed(true);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
+      {/* ─── AGE VERIFICATION OVERLAY ─── */}
+      <AnimatePresence>
+        {!ageVerified && !ageDismissed && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-md p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden"
+            >
+              {/* Top gradient bar */}
+              <div className="h-2 bg-gradient-to-r from-amber-500 via-red-500 to-amber-600" />
+              
+              <div className="p-8 text-center">
+                {/* Icon */}
+                <div className="mx-auto w-20 h-20 rounded-full bg-amber-100 flex items-center justify-center mb-6">
+                  <Wine size={40} className="text-amber-600" />
+                </div>
+                
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                  Verificación de edad
+                </h2>
+                <p className="text-gray-600 mb-2 text-sm">
+                  Este sitio contiene información sobre bebidas alcohólicas.
+                </p>
+                <p className="text-gray-800 font-semibold mb-8">
+                  ¿Confirmás que sos mayor de 18 años?
+                </p>
+
+                <div className="flex flex-col gap-3">
+                  <button
+                    onClick={() => handleAgeVerify(true)}
+                    className="w-full py-3.5 px-6 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-semibold text-base transition-all active:scale-[0.98] shadow-lg shadow-amber-600/30"
+                  >
+                    Sí, soy mayor de edad
+                  </button>
+                  <button
+                    onClick={() => handleAgeVerify(false)}
+                    className="w-full py-3.5 px-6 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium text-base transition-all active:scale-[0.98]"
+                  >
+                    No, soy menor de edad
+                  </button>
+                </div>
+
+                <p className="text-[11px] text-gray-400 mt-6">
+                  Beber con moderación. Prohibida la venta de alcohol a menores de edad.
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ─── MINOR BLOCKED SCREEN ─── */}
+      {ageDismissed && !ageVerified && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-gray-50 p-4">
+          <div className="text-center max-w-sm">
+            <div className="mx-auto w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mb-4">
+              <X size={32} className="text-red-500" />
+            </div>
+            <h2 className="text-xl font-bold text-gray-900 mb-2">
+              Acceso restringido
+            </h2>
+            <p className="text-gray-600 text-sm mb-6">
+              Lo sentimos, debés ser mayor de 18 años para acceder a este contenido.
+            </p>
+            <button
+              onClick={() => setAgeDismissed(false)}
+              className="text-amber-600 hover:text-amber-700 font-medium text-sm underline underline-offset-4"
+            >
+              Volver a verificar
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* ─── HEADER / NAVBAR (sticky) ─── */}
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
