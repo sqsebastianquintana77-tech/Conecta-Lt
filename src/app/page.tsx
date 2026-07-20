@@ -97,6 +97,8 @@ interface Business {
   image: string | null;
   gallery: string[];
   tags: string[];
+  latitude: number | null;
+  longitude: number | null;
   promotions: Promotion[];
   reviews: Review[];
 }
@@ -1347,6 +1349,12 @@ export default function Home() {
                       {(session.user?.name || '?')[0]}
                     </div>
                   )}
+                  <button
+                    onClick={() => window.location.href = '/admin'}
+                    className="hidden sm:inline-flex text-[11px] text-amber-700 hover:text-amber-900 font-medium transition-colors"
+                  >
+                    Admin
+                  </button>
                   <button
                     onClick={() => signOut()}
                     className="hidden sm:inline-flex text-[11px] text-gray-500 hover:text-gray-700 transition-colors"

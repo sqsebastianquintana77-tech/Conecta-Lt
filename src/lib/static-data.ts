@@ -63,7 +63,7 @@ export interface StaticBusiness {
 
 // ── Business Data ──────────────────────────────────────────────────────────
 
-const businesses: Omit<StaticBusiness, 'promotions' | 'reviews'>[] = [
+export const businesses: Omit<StaticBusiness, 'promotions' | 'reviews'>[] = [
   {
     id: "b1",
     name: "Licorería El Castillo",
@@ -771,7 +771,7 @@ const enrichedPromotions = promotions.map((p, i) => ({
   createdAt: "2025-07-01T00:00:00.000Z",
 }));
 
-const enrichedReviews = reviews.map((r, i) => ({
+export const enrichedReviews = reviews.map((r, i) => ({
   ...r,
   id: `r${i + 1}`,
   createdAt: "2025-07-01T00:00:00.000Z",

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getBusinessBySlug } from '@/lib/static-data';
+import { supabase } from '@/lib/supabase';
 
 export async function GET(
   _request: NextRequest,
@@ -7,11 +7,35 @@ export async function GET(
 ) {
   const { slug } = await params;
 
-  const business = getBusinessBySlug(slug);
+  try {
+    const { data: business, error } = await supabase
+      .from('Business')
+      .select('*')
+      .eq('slug', slug)
+      .single();
 
-  if (!business) {
-    return NextResponse.json({ error: 'Business not found' }, { status: 404 });
+    if (error || !business) {
+      return NextResponse.json({ error: 'Negocio no encontrado' }, { status: 404 });
+    }
+
+    // Fetch promotions for this business
+    const { data: promotions } = await supabase
+      .from('Promotion')
+      .select('*')
+      .eq('businessId', business.id);
+
+    // Fetch static (seeded) reviews
+    const { enrichedReviews } = await import('@/lib/static-data');
+
+    const enriched = {
+      ...business,
+      promotions: promotions ?? [],
+      reviews: enrichedReviews.filter((r) => r.businessId === business.id),
+    };
+
+    return NextResponse.json({ business: enriched });
+  } catch (error) {
+    console.error('Error fetching business by slug:', error);
+    return NextResponse.json({ error: 'Error interno' }, { status: 500 });
   }
-
-  return NextResponse.json({ business });
 }
