@@ -1,7 +1,15 @@
 import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { supabase } from '@/lib/supabase';
 
 export async function GET() {
+  // Verificar que el usuario esta autenticado
+  const session = await getServerSession(authOptions);
+  if (!session?.user) {
+    return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+  }
+
   try {
     // Business stats
     const { count: totalBusinesses } = await supabase
@@ -50,10 +58,10 @@ export async function GET() {
       .select('*', { count: 'exact', head: true })
       .eq('active', true);
 
-    // Recent reviews (last 10)
+    // Recent reviews (last 10) - SIN email expuesto
     const { data: recentReviews } = await supabase
       .from('Review')
-      .select('*, User(name, email, image)')
+      .select('id, rating, comentario, createdAt, userId, businessId, User(name, image)')
       .order('createdAt', { ascending: false })
       .limit(10);
 

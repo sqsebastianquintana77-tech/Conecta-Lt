@@ -2,9 +2,18 @@ import NextRequest, { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase-admin';
+import { rateLimit } from '@/lib/rate-limit';
 
 // GET /api/reviews?businessSlug=xxx
 export async function GET(request: NextRequest) {
+  const { allowed } = rateLimit(request);
+  if (!allowed) {
+    return NextResponse.json(
+      { error: 'Demasiadas solicitudes' },
+      { status: 429, headers: { 'Retry-After': '60' } }
+    );
+  }
   const slug = request.nextUrl.searchParams.get('businessSlug');
   if (!slug) {
     return NextResponse.json({ error: 'businessSlug is required' }, { status: 400 });
@@ -44,7 +53,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Find or create user
-    const { data: existingUser } = await supabase
+    const { data: existingUser } = await supabaseAdmin
       .from('User')
       .select('id')
       .eq('email', session.user.email)
@@ -53,7 +62,7 @@ export async function POST(request: NextRequest) {
     let userId = existingUser?.id;
 
     if (!userId) {
-      const { data: newUser } = await supabase
+      const { data: newUser } = await supabaseAdmin
         .from('User')
         .insert({
           id: crypto.randomUUID(),
@@ -71,7 +80,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Error al crear usuario' }, { status: 500 });
     }
 
-    const { data: review, error } = await supabase
+    const { data: review, error } = await supabaseAdmin
       .from('Review')
       .insert({
         id: crypto.randomUUID(),

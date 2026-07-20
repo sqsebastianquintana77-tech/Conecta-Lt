@@ -1,6 +1,6 @@
 import NextAuth, { type NextAuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -31,7 +31,7 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user }) {
       if (!user?.email) return false;
       try {
-        await supabase.from('User').upsert({
+        await supabaseAdmin.from('User').upsert({
           email: user.email,
           name: user.name,
           image: user.image,

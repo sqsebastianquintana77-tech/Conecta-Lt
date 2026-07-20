@@ -1,7 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { rateLimit } from '@/lib/rate-limit';
 
 export async function GET(request: NextRequest) {
+  const { allowed } = rateLimit(request);
+  if (!allowed) {
+    return NextResponse.json(
+      { error: 'Demasiadas solicitudes' },
+      { status: 429, headers: { 'Retry-After': '60' } }
+    );
+  }
   const searchParams = request.nextUrl.searchParams;
   const category = searchParams.get('category') || '';
   const zone = searchParams.get('zone') || '';
