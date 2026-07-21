@@ -10,6 +10,15 @@ export async function GET() {
     return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
   }
 
+  // Verificar que el email es admin
+  const adminEmails = (process.env.ADMIN_EMAILS ?? '')
+    .split(',')
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+  if (adminEmails.length > 0 && !adminEmails.includes(session.user.email!.toLowerCase())) {
+    return NextResponse.json({ error: 'Prohibido' }, { status: 403 });
+  }
+
   try {
     // Business stats
     const { count: totalBusinesses } = await supabaseAdmin

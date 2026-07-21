@@ -76,12 +76,20 @@ export default function AdminPage() {
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [lastRefresh, setLastRefresh] = useState<string>('');
+  const [forbidden, setForbidden] = useState(false);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/');
     }
-  }, [status, router]);
+    // Verificar que el email del usuario está en la lista de admins
+    if (session?.user?.email) {
+      const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS ?? '').split(',').map(e => e.trim().toLowerCase());
+      if (adminEmails.length > 0 && !adminEmails.includes(session.user.email.toLowerCase())) {
+        setForbidden(true);
+      }
+    }
+  }, [status, session, router]);
 
   const fetchStats = async () => {
     setLoading(true);
@@ -100,8 +108,26 @@ export default function AdminPage() {
   };
 
   useEffect(() => {
-    if (session) fetchStats();
-  }, [session]);
+    if (session && !forbidden) fetchStats();
+  }, [session, forbidden]);
+
+  if (forbidden) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-950">
+        <div className="text-center space-y-4">
+          <div className="mx-auto w-16 h-16 rounded-full bg-red-500/20 flex items-center justify-center">
+            <ShieldCheck size={32} className="text-red-400" />
+          </div>
+          <h2 className="text-xl font-bold text-white">Acceso restringido</h2>
+          <p className="text-gray-400 text-sm">No tenés permisos de administrador.</p>
+          <Button variant="outline" onClick={() => router.push('/')}>
+            <ArrowLeft size={16} className="mr-2" />
+            Volver al inicio
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   if (status === 'loading' || !session) {
     return (

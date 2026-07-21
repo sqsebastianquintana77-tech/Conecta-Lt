@@ -1130,6 +1130,7 @@ export default function Home() {
   );
   const [activeZone, setActiveZone] = useState('Todas');
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [selectedBusiness, setSelectedBusiness] = useState<Business | null>(
     null
   );
@@ -1157,7 +1158,7 @@ export default function Home() {
     const params = new URLSearchParams();
     if (activeCategory !== 'ALL') params.set('category', activeCategory);
     if (activeZone !== 'Todas') params.set('zone', activeZone);
-    if (searchQuery.trim()) params.set('search', searchQuery.trim());
+    if (debouncedSearch.trim()) params.set('search', debouncedSearch.trim());
 
     try {
       const res = await fetch(`/api/businesses?${params.toString()}`);
@@ -1169,7 +1170,7 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  }, [activeCategory, activeZone, searchQuery]);
+  }, [activeCategory, activeZone, debouncedSearch]);
 
   // Solo fetchear datos si la edad fue verificada
   useEffect(() => {
@@ -1180,7 +1181,7 @@ export default function Home() {
     setSearchQuery(value);
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
-      // fetchData will re-trigger via the searchQuery dep
+      setDebouncedSearch(value);
     }, 300);
   };
 
