@@ -82,19 +82,16 @@ export default function AdminPage() {
     if (status === 'unauthenticated') {
       router.push('/');
     }
-    // Verificar que el email del usuario está en la lista de admins
-    if (session?.user?.email) {
-      const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS ?? '').split(',').map(e => e.trim().toLowerCase());
-      if (adminEmails.length > 0 && !adminEmails.includes(session.user.email.toLowerCase())) {
-        setForbidden(true);
-      }
-    }
-  }, [status, session, router]);
+  }, [status, router]);
 
   const fetchStats = async () => {
     setLoading(true);
     try {
       const res = await fetch('/api/admin/stats');
+      if (res.status === 403) {
+        setForbidden(true);
+        return;
+      }
       if (res.ok) {
         const data = await res.json();
         setStats(data);
