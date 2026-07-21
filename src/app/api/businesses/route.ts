@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 import { rateLimit } from '@/lib/rate-limit';
 
 export async function GET(request: NextRequest) {
@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
   const featured = searchParams.get('featured') === 'true';
 
   try {
-    let query = supabase.from('Business').select('*');
+    let query = supabaseAdmin.from('Business').select('*');
 
     if (category) {
       query = query.eq('category', category);
@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
     if (error) throw error;
 
     // Fetch promotions for all businesses
-    const { data: promotions } = await supabase
+    const { data: promotions } = await supabaseAdmin
       .from('Promotion')
       .select('*')
       .eq('active', true);

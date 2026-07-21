@@ -1,7 +1,6 @@
 import NextRequest, { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import { supabase } from '@/lib/supabase';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { rateLimit } from '@/lib/rate-limit';
 
@@ -20,7 +19,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const { data: reviews, error } = await supabase
+    const { data: reviews, error } = await supabaseAdmin
       .from('Review')
       .select('*')
       .eq('businessSlug', slug)

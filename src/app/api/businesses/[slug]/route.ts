@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 import { rateLimit } from '@/lib/rate-limit';
 
 export async function GET(
@@ -16,7 +16,7 @@ export async function GET(
   const { slug } = await params;
 
   try {
-    const { data: business, error } = await supabase
+    const { data: business, error } = await supabaseAdmin
       .from('Business')
       .select('*')
       .eq('slug', slug)
@@ -27,7 +27,7 @@ export async function GET(
     }
 
     // Fetch promotions for this business
-    const { data: promotions } = await supabase
+    const { data: promotions } = await supabaseAdmin
       .from('Promotion')
       .select('*')
       .eq('businessId', business.id);

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 
 export async function GET() {
   // Verificar que el usuario esta autenticado
@@ -12,61 +12,61 @@ export async function GET() {
 
   try {
     // Business stats
-    const { count: totalBusinesses } = await supabase
+    const { count: totalBusinesses } = await supabaseAdmin
       .from('Business')
       .select('*', { count: 'exact', head: true });
 
-    const { count: verifiedBusinesses } = await supabase
+    const { count: verifiedBusinesses } = await supabaseAdmin
       .from('Business')
       .select('*', { count: 'exact', head: true })
       .eq('verified', true);
 
-    const { count: featuredBusinesses } = await supabase
+    const { count: featuredBusinesses } = await supabaseAdmin
       .from('Business')
       .select('*', { count: 'exact', head: true })
       .eq('featured', true);
 
     // Category breakdown
-    const { count: licoreriaCount } = await supabase
+    const { count: licoreriaCount } = await supabaseAdmin
       .from('Business')
       .select('*', { count: 'exact', head: true })
       .eq('category', 'LICORERIA');
 
-    const { count: tascaCount } = await supabase
+    const { count: tascaCount } = await supabaseAdmin
       .from('Business')
       .select('*', { count: 'exact', head: true })
       .eq('category', 'TASCA');
 
-    const { count: bodegonCount } = await supabase
+    const { count: bodegonCount } = await supabaseAdmin
       .from('Business')
       .select('*', { count: 'exact', head: true })
       .eq('category', 'BODEGON');
 
     // User stats
-    const { count: totalUsers } = await supabase
+    const { count: totalUsers } = await supabaseAdmin
       .from('User')
       .select('*', { count: 'exact', head: true });
 
     // Review stats
-    const { count: totalReviews } = await supabase
+    const { count: totalReviews } = await supabaseAdmin
       .from('Review')
       .select('*', { count: 'exact', head: true });
 
     // Promotion stats
-    const { count: activePromotions } = await supabase
+    const { count: activePromotions } = await supabaseAdmin
       .from('Promotion')
       .select('*', { count: 'exact', head: true })
       .eq('active', true);
 
     // Recent reviews (last 10) - SIN email expuesto
-    const { data: recentReviews } = await supabase
+    const { data: recentReviews } = await supabaseAdmin
       .from('Review')
       .select('id, rating, comentario, createdAt, userId, businessId, User(name, image)')
       .order('createdAt', { ascending: false })
       .limit(10);
 
     // Top rated businesses
-    const { data: topRated } = await supabase
+    const { data: topRated } = await supabaseAdmin
       .from('Business')
       .select('id, name, slug, category, rating, reviewCount')
       .order('rating', { ascending: false })
@@ -75,7 +75,7 @@ export async function GET() {
     // Reviews per day (last 30 days)
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    const { data: recentReviewData } = await supabase
+    const { data: recentReviewData } = await supabaseAdmin
       .from('Review')
       .select('createdAt')
       .gte('createdAt', thirtyDaysAgo.toISOString());
@@ -96,7 +96,7 @@ export async function GET() {
     });
 
     // Zone breakdown
-    const { data: allBiz } = await supabase
+    const { data: allBiz } = await supabaseAdmin
       .from('Business')
       .select('zone');
     const zoneCounts: Record<string, number> = {};
