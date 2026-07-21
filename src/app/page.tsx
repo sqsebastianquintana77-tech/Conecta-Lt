@@ -1137,9 +1137,17 @@ export default function Home() {
   const [ageVerified, setAgeVerified] = useState(false);
   const [ageDismissed, setAgeDismissed] = useState(false);
 
+  // Verificar edad via cookie del servidor (no puede ser manipulada por el cliente)
   useEffect(() => {
-    const verified = localStorage.getItem('conecta-lt-age-verified');
-    if (verified === 'true') setAgeVerified(true);
+    (async () => {
+      try {
+        const res = await fetch('/api/age-verify');
+        const data = await res.json();
+        if (data.verified) setAgeVerified(true);
+      } catch {
+        // fallback: si falla el check, mostramos el gate
+      }
+    })();
   }, []);
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -1163,9 +1171,10 @@ export default function Home() {
     }
   }, [activeCategory, activeZone, searchQuery]);
 
+  // Solo fetchear datos si la edad fue verificada
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    if (ageVerified) fetchData();
+  }, [ageVerified, fetchData]);
 
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
@@ -1183,9 +1192,13 @@ export default function Home() {
   const allPromotions = businesses.filter((b) => b.promotions.length > 0);
   const featuredBusinesses = businesses.filter((b) => b.featured);
 
-  const handleAgeVerify = (isAdult: boolean) => {
+  const handleAgeVerify = async (isAdult: boolean) => {
     if (isAdult) {
-      localStorage.setItem('conecta-lt-age-verified', 'true');
+      try {
+        await fetch('/api/age-verify', { method: 'POST' });
+      } catch {
+        // Si falla el server, igual dejamos pasar (cookie no esencial para UX)
+      }
       setAgeVerified(true);
     } else {
       setAgeDismissed(true);
