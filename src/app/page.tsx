@@ -1225,9 +1225,7 @@ export default function Home() {
               
               <div className="p-10 text-center">
                 {/* Icon */}
-                <div className="mx-auto w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center mb-6 shadow-soft">
-                  <Wine size={36} className="text-primary" />
-                </div>
+                <img src="/logo.png" alt="Conecta-Lt" className="mx-auto w-20 h-20 rounded-2xl object-contain mb-6 shadow-soft" />
                 
                 <h2 className="text-2xl font-bold text-foreground mb-2">
                   Verificación de edad
@@ -1292,9 +1290,7 @@ export default function Home() {
           <div className="flex items-center justify-between h-14 sm:h-16">
             {/* Logo */}
             <div className="flex items-center gap-2">
-              <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-primary/85 text-primary-foreground shadow-md shadow-primary/25">
-                <Wine size={18} />
-              </div>
+              <img src="/logo.png" alt="Conecta-Lt" className="w-9 h-9 rounded-xl object-contain" />
               <div>
                 <h1 className="text-base sm:text-lg font-bold text-foreground leading-tight tracking-tight">
                   Conecta-Lt
@@ -1647,9 +1643,7 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-2.5">
-              <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-gradient-to-br from-primary to-primary/85 text-primary-foreground">
-                <Wine size={14} />
-              </div>
+              <img src="/logo.png" alt="Conecta-Lt" className="w-7 h-7 rounded-lg object-contain" />
               <p className="text-xs text-foreground/80">
                 Conecta-Lt — Directorio hiperlocalizado de Los Teques, Estado Miranda
               </p>
