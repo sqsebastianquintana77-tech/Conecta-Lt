@@ -264,7 +264,7 @@ function BusinessCard({
         {/* Category badge overlay */}
         <div className="absolute top-2.5 left-2.5">
           <span
-            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold border backdrop-blur-md bg-white/85 shadow-soft ${config.color}`}
+            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold border backdrop-blur-md bg-card/85 shadow-soft ${config.color}`}
           >
             <Icon size={11} />
             {config.label}
@@ -403,7 +403,7 @@ function FeaturedCard({
         )}
         <div className="absolute top-3 left-3 flex items-center gap-1.5">
           <span
-            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold border backdrop-blur-md bg-white/85 shadow-soft ${config.color}`}
+            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold border backdrop-blur-md bg-card/85 shadow-soft ${config.color}`}
           >
             <Icon size={11} />
             {config.label}
@@ -455,7 +455,7 @@ function PromotionCard({ business }: { business: Business }) {
               {business.name}
             </p>
             {promo.discount && (
-              <span className="inline-flex items-center rounded-full bg-red-50 text-red-600 px-2.5 py-0.5 text-[10px] font-bold flex-shrink-0 border border-red-100">
+              <span className="inline-flex items-center rounded-full bg-red-500/15 text-red-400 px-2.5 py-0.5 text-[10px] font-bold flex-shrink-0 border border-red-500/20">
                 {promo.discount}
               </span>
             )}
@@ -975,7 +975,7 @@ function DetailModal({
                 {detail.promotions.map((promo) => (
                   <div
                     key={promo.id}
-                    className="rounded-xl border border-red-200/80 bg-red-50/80 p-3"
+                    className="rounded-xl border border-red-500/20 bg-red-500/10 p-3"
                   >
                     <div className="flex items-center justify-between gap-2 mb-1">
                       <span className="text-xs font-bold text-red-700">
@@ -1218,7 +1218,7 @@ export default function Home() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden"
+              className="bg-card rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-border/30"
             >
               {/* Top gradient bar */}
               <div className="h-1.5 bg-gradient-to-r from-primary via-amber-500 to-primary/80" />
@@ -1267,7 +1267,7 @@ export default function Home() {
       {ageDismissed && !ageVerified && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background p-4">
           <div className="text-center max-w-sm">
-            <div className="mx-auto w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mb-4">
+            <div className="mx-auto w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mb-4">
               <X size={32} className="text-red-500" />
             </div>
             <h2 className="text-xl font-bold text-foreground mb-2">
@@ -1287,7 +1287,7 @@ export default function Home() {
       )}
 
       {/* ─── HEADER / NAVBAR (sticky) ─── */}
-      <header className="sticky top-0 z-40 glass border-b border-white/50">
+      <header className="sticky top-0 z-40 glass border-b border-border/40">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-14 sm:h-16">
             {/* Logo */}
@@ -1466,7 +1466,7 @@ export default function Home() {
                   <Store size={13} className="text-primary" />
                   <span className="font-semibold text-foreground">{stats.total}</span> negocios
                 </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/90 border border-border/50 px-4 py-2 text-xs font-medium text-muted-foreground shadow-soft">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-card/90 border border-border/50 px-4 py-2 text-xs font-medium text-muted-foreground shadow-soft">
                   <ShieldCheck size={13} className="text-primary" />
                   <span className="font-semibold text-foreground">{stats.verified}</span> verificados
                 </span>
@@ -1603,8 +1603,8 @@ export default function Home() {
                 <aside className="hidden lg:block w-80 flex-shrink-0">
                   <div className="sticky top-36">
                     <div className="flex items-center gap-2.5 mb-4">
-                      <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-red-50">
-                        <PartyPopper size={14} className="text-red-500" />
+                      <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-red-500/10">
+                        <PartyPopper size={14} className="text-red-400" />
                       </div>
                       <h4 className="text-sm font-bold text-foreground">
                         Promociones activas
@@ -1624,8 +1624,8 @@ export default function Home() {
             {allPromotions.length > 0 && (
               <div className="mt-10 lg:hidden">
                 <div className="flex items-center gap-2.5 mb-4">
-                  <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-red-50">
-                        <PartyPopper size={14} className="text-red-500" />
+                  <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-red-500/10">
+                        <PartyPopper size={14} className="text-red-400" />
                   </div>
                   <h4 className="text-sm font-bold text-foreground">
                     Promociones activas

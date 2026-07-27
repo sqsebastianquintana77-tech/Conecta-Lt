@@ -67,8 +67,8 @@ interface BusinessData {
 
 const categoryConfig: Record<string, { label: string; icon: React.ReactNode; color: string; bg: string }> = {
   LICORERIA: { label: 'Licorería', icon: <Wine size={18} />, color: 'text-primary', bg: 'bg-primary/10' },
-  TASCA: { label: 'Tasca', icon: <Beer size={18} />, color: 'text-orange-700', bg: 'bg-orange-50' },
-  BODEGON: { label: 'Bodegón', icon: <ShoppingBag size={18} />, color: 'text-emerald-700', bg: 'bg-emerald-50' },
+  TASCA: { label: 'Tasca', icon: <Beer size={18} />, color: 'text-orange-400', bg: 'bg-orange-500/10' },
+  BODEGON: { label: 'Bodegón', icon: <ShoppingBag size={18} />, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
 };
 
 const priceLabels: Record<string, { label: string; range: string }> = {
@@ -144,13 +144,13 @@ export default function BusinessDetailClient({
             <Card><CardContent className="p-4 flex items-center gap-3"><MapPin size={20} className="text-primary shrink-0" /><div><p className="text-xs text-muted-foreground">Dirección</p><p className="text-sm font-medium text-foreground">{business.address}</p></div></CardContent></Card>
           )}
           {business.phone && (
-            <Card><CardContent className="p-4 flex items-center gap-3"><Phone size={20} className="text-amber-600 shrink-0" /><div><p className="text-xs text-gray-500">Teléfono</p><p className="text-sm font-medium text-foreground">{business.phone}</p></div></CardContent></Card>
+            <Card><CardContent className="p-4 flex items-center gap-3"><Phone size={20} className="text-primary shrink-0" /><div><p className="text-xs text-muted-foreground">Teléfono</p><p className="text-sm font-medium text-foreground">{business.phone}</p></div></CardContent></Card>
           )}
           {business.hours && (
-            <Card><CardContent className="p-4 flex items-center gap-3"><Clock size={20} className="text-amber-600 shrink-0" /><div><p className="text-xs text-gray-500">Horario</p><p className="text-sm font-medium text-foreground">{business.hours}</p></div></CardContent></Card>
+            <Card><CardContent className="p-4 flex items-center gap-3"><Clock size={20} className="text-primary shrink-0" /><div><p className="text-xs text-muted-foreground">Horario</p><p className="text-sm font-medium text-foreground">{business.hours}</p></div></CardContent></Card>
           )}
           {business.happyHour && (
-            <Card><CardContent className="p-4 flex items-center gap-3"><Tag size={20} className="text-amber-600 shrink-0" /><div><p className="text-xs text-gray-500">Happy Hour</p><p className="text-sm font-medium text-foreground">{business.happyHour}</p></div></CardContent></Card>
+            <Card><CardContent className="p-4 flex items-center gap-3"><Tag size={20} className="text-primary shrink-0" /><div><p className="text-xs text-muted-foreground">Happy Hour</p><p className="text-sm font-medium text-foreground">{business.happyHour}</p></div></CardContent></Card>
           )}
         </div>
 
@@ -184,7 +184,7 @@ export default function BusinessDetailClient({
         {/* Galería */}
         {business.gallery && business.gallery.length > 0 && (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">Galería</h2>
+            <h2 className="text-lg font-semibold text-foreground mb-3">Galería</h2>
             <div className="grid grid-cols-3 gap-2">
               {business.gallery.slice(0, 3).map((img, i) => (
                 <button key={i} onClick={() => { setGalleryIdx(i); setGalleryOpen(true); }} className="relative aspect-square rounded-2xl overflow-hidden group cursor-pointer">
@@ -215,7 +215,7 @@ export default function BusinessDetailClient({
             <h2 className="text-lg font-semibold text-foreground mb-3">Promociones activas</h2>
             <div className="grid gap-3">
               {(business as unknown as { promotions: Promotion[] }).promotions.map((promo) => (
-                <Card key={promo.id} className="border-red-200/80 bg-red-50/50">
+                <Card key={promo.id} className="border-red-500/20 bg-red-500/10">
                   <CardContent className="p-4 flex items-start justify-between">
                     <div>
                       <h3 className="font-semibold text-foreground">{promo.title}</h3>
@@ -231,7 +231,7 @@ export default function BusinessDetailClient({
 
         {/* Reviews */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-          <h2 className="text-lg font-semibold text-gray-900 mb-3">Reseñas ({reviews.length})</h2>
+          <h2 className="text-lg font-semibold text-foreground mb-3">Reseñas ({reviews.length})</h2>
           {reviews.length > 0 ? (
             <div className="grid gap-3">
               {reviews.map((r) => (
@@ -247,7 +247,7 @@ export default function BusinessDetailClient({
                           <p className="text-xs text-muted-foreground">{new Date(r.createdAt).toLocaleDateString('es-VE')}</p>
                         </div>
                       </div>
-                      <div className="flex gap-0.5">{Array.from({ length: 5 }).map((_, i) => <Star key={i} size={14} className={i < r.rating ? 'text-amber-400 fill-amber-400' : 'text-gray-300'} />)}</div>
+                      <div className="flex gap-0.5">{Array.from({ length: 5 }).map((_, i) => <Star key={i} size={14} className={i < r.rating ? 'text-amber-400 fill-amber-400' : 'text-muted-foreground'} />)}</div>
                     </div>
                     {r.comment && <p className="text-sm text-foreground/70">{r.comment}</p>}
                   </CardContent>
@@ -255,14 +255,14 @@ export default function BusinessDetailClient({
               ))}
             </div>
           ) : (
-            <p className="text-gray-400 text-sm">Aún no hay reseñas. ¡Sé el primero en dejar la tuya!</p>
+            <p className="text-muted-foreground text-sm">Aún no hay reseñas. ¡Sé el primero en dejar la tuya!</p>
           )}
         </motion.div>
 
         {/* Mapa */}
         {business.latitude && business.longitude && (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">Ubicación</h2>
+            <h2 className="text-lg font-semibold text-foreground mb-3">Ubicación</h2>
             <div className="rounded-2xl overflow-hidden border border-border/60">
               <iframe
                 src={`https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3000!2d${business.longitude}!3d${business.latitude}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2z${business.latitude},${business.longitude}!5e0!3m2!1ses!2sve!4v1`}
