@@ -259,7 +259,7 @@ function BusinessCard({
             src={business.image}
             alt={business.name}
             fill
-            className="object-cover"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
         ) : (
@@ -326,7 +326,7 @@ function BusinessCard({
           {business.tags.slice(0, 3).map((tag) => (
             <span
               key={tag}
-              className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-600"
+              className="inline-flex items-center rounded-full bg-amber-50 border border-amber-100 px-2.5 py-0.5 text-[10px] font-medium text-amber-700"
             >
               {tag}
             </span>
@@ -360,9 +360,9 @@ function BusinessCard({
 
       {/* CTA */}
       <Button
-        variant="outline"
+        variant="ghost"
         size="sm"
-        className="mt-auto w-full text-amber-700 border-amber-200 hover:bg-amber-50 hover:text-amber-800"
+        className="mt-auto w-full text-amber-700 hover:bg-amber-50 hover:text-amber-800 font-medium rounded-xl h-9"
         onClick={() => onSelect(business)}
       >
         Ver más
@@ -387,41 +387,41 @@ function FeaturedCard({
 
   return (
     <motion.div
-      whileHover={{ y: -4, boxShadow: '0 8px 25px -5px rgba(0,0,0,0.1)' }}
-      className="min-w-[280px] max-w-[320px] flex-shrink-0 snap-start rounded-xl border bg-white overflow-hidden transition-colors"
+      whileHover={{ y: -6, transition: { duration: 0.25 } }}
+      className="group min-w-[300px] max-w-[340px] flex-shrink-0 snap-start rounded-2xl bg-white overflow-hidden shadow-card hover:shadow-card-hover transition-shadow duration-300"
     >
       {/* Image or placeholder */}
-      <div className="relative h-32 w-full bg-gradient-to-br from-amber-100 to-amber-50">
+      <div className="relative h-40 w-full overflow-hidden bg-gradient-to-br from-amber-100 via-orange-50 to-amber-50">
         {business.image ? (
           <Image
             src={business.image}
             alt={business.name}
             fill
-            className="object-cover"
-            sizes="320px"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            sizes="340px"
           />
         ) : (
-          <div className="flex items-center justify-center h-full">
-            <Icon size={36} className="text-amber-300" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Icon size={40} className="text-amber-300/70" />
           </div>
         )}
-        <div className="absolute top-2 left-2 flex items-center gap-1.5">
+        <div className="absolute top-3 left-3 flex items-center gap-1.5">
           <span
             className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold border backdrop-blur-sm bg-white/80 ${config.color}`}
           >
             <Icon size={12} />
             {config.label}
           </span>
-          <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 text-amber-700 px-2 py-0.5 text-[10px] font-bold backdrop-blur-sm">
+          <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/90 text-white px-2.5 py-1 text-[10px] font-bold backdrop-blur-sm shadow-lg shadow-amber-500/20">
             <Sparkles size={10} /> Destacado
           </span>
         </div>
       </div>
       <div className="p-4 flex flex-col gap-3">
       <div>
-        <h3 className="font-bold text-sm text-gray-900">{business.name}</h3>
+        <h3 className="font-bold text-[15px] text-gray-900 tracking-tight">{business.name}</h3>
         {business.subcategory && (
-          <p className="text-xs text-muted-foreground">{business.subcategory}</p>
+          <p className="text-xs text-muted-foreground mt-0.5">{business.subcategory}</p>
         )}
       </div>
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -451,7 +451,7 @@ function FeaturedCard({
 
 function PromotionCard({ business }: { business: Business }) {
   return (
-    <div className="rounded-lg border bg-white p-3 flex flex-col gap-1.5">
+    <div className="rounded-xl bg-white p-4 flex flex-col gap-2 shadow-card border-0"
       {business.promotions.map((promo) => (
         <div key={promo.id} className="space-y-1">
           <div className="flex items-center justify-between gap-2">
@@ -459,14 +459,14 @@ function PromotionCard({ business }: { business: Business }) {
               {business.name}
             </p>
             {promo.discount && (
-              <span className="inline-flex items-center rounded-full bg-red-100 text-red-700 px-2 py-0.5 text-[10px] font-bold flex-shrink-0">
+              <span className="inline-flex items-center rounded-full bg-red-50 text-red-600 px-2.5 py-0.5 text-[10px] font-bold flex-shrink-0 border border-red-100"
                 {promo.discount}
               </span>
             )}
           </div>
           <p className="text-xs font-medium text-amber-700">{promo.title}</p>
           {promo.description && (
-            <p className="text-[11px] text-muted-foreground line-clamp-2">
+            <p className="text-[11px] text-muted-foreground line-clamp-2 leading-relaxed">
               {promo.description}
             </p>
           )}
@@ -1225,12 +1225,12 @@ export default function Home() {
               className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden"
             >
               {/* Top gradient bar */}
-              <div className="h-2 bg-gradient-to-r from-amber-500 via-red-500 to-amber-600" />
+              <div className="h-1.5 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600" />
               
-              <div className="p-8 text-center">
+              <div className="p-10 text-center">
                 {/* Icon */}
-                <div className="mx-auto w-20 h-20 rounded-full bg-amber-100 flex items-center justify-center mb-6">
-                  <Wine size={40} className="text-amber-600" />
+                <div className="mx-auto w-20 h-20 rounded-2xl bg-gradient-to-br from-amber-100 to-orange-50 flex items-center justify-center mb-6 shadow-sm">
+                  <Wine size={36} className="text-amber-600" />
                 </div>
                 
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">
@@ -1252,13 +1252,13 @@ export default function Home() {
                   </button>
                   <button
                     onClick={() => handleAgeVerify(false)}
-                    className="w-full py-3.5 px-6 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium text-base transition-all active:scale-[0.98]"
+                    className="w-full py-3.5 px-6 rounded-2xl bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium text-base transition-all active:scale-[0.98]"
                   >
                     No, soy menor de edad
                   </button>
                 </div>
 
-                <p className="text-[11px] text-gray-400 mt-6">
+                <p className="text-[11px] text-gray-400 mt-8">
                   Beber con moderación. Prohibida la venta de alcohol a menores de edad.
                 </p>
               </div>
@@ -1291,16 +1291,16 @@ export default function Home() {
       )}
 
       {/* ─── HEADER / NAVBAR (sticky) ─── */}
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b">
+      <header className="sticky top-0 z-40 glass border-b border-white/50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-14 sm:h-16">
             {/* Logo */}
             <div className="flex items-center gap-2">
-              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-amber-600 text-white">
+              <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 text-white shadow-md shadow-amber-500/25">
                 <Wine size={18} />
               </div>
               <div>
-                <h1 className="text-base sm:text-lg font-bold text-gray-900 leading-tight">
+                <h1 className="text-base sm:text-lg font-bold text-gray-900 leading-tight tracking-tight">
                   Conecta-Lt
                 </h1>
                 <p className="text-[10px] sm:text-xs text-muted-foreground leading-tight hidden sm:block">
@@ -1397,18 +1397,18 @@ export default function Home() {
 
       <main className="flex-1">
         {/* ─── HERO SECTION ─── */}
-        <section className="bg-gradient-to-b from-amber-50 to-white py-8 sm:py-12">
+        <section className="relative overflow-hidden py-14 sm:py-20">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 leading-tight">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 leading-tight tracking-tight text-balance">
               Descubre los mejores licores de{' '}
-              <span className="text-amber-600">Los Teques</span>
+              <span className="bg-gradient-to-r from-amber-600 to-orange-500 bg-clip-text text-transparent">Los Teques</span>
             </h2>
-            <p className="text-sm sm:text-base text-muted-foreground mb-6 max-w-xl mx-auto">
-              Licorerías, tascas y bodegones. Encuentra tu lugar favorito.
+            <p className="text-sm sm:text-base text-muted-foreground mb-8 max-w-lg mx-auto leading-relaxed">
+              Licorerías, tascas y bodegones. Encuentra tu lugar favorito para disfrutar.
             </p>
 
             {/* Search bar */}
-            <div className="flex items-center gap-2 max-w-lg mx-auto mb-6">
+            <div className="flex items-center gap-2 max-w-xl mx-auto mb-8">
               <div className="relative flex-1">
                 <Search
                   size={16}
@@ -1418,11 +1418,11 @@ export default function Home() {
                   placeholder="Buscar por nombre, marca, especialidad..."
                   value={searchQuery}
                   onChange={(e) => handleSearchChange(e.target.value)}
-                  className="pl-9 h-11"
+                  className="pl-10 h-12 rounded-xl bg-white/90 backdrop-blur-sm border-gray-200/80 text-sm shadow-sm focus-visible:ring-amber-500/20 focus-visible:border-amber-400"
                 />
               </div>
               <Button
-                className="bg-amber-600 hover:bg-amber-700 text-white h-11 px-5"
+                className="bg-amber-600 hover:bg-amber-700 text-white h-12 px-6 rounded-xl font-medium shadow-md shadow-amber-600/25"
                 onClick={fetchData}
               >
                 <Search size={16} />
@@ -1431,13 +1431,13 @@ export default function Home() {
             </div>
 
             {/* Category pills */}
-            <div className="flex flex-wrap items-center justify-center gap-2 mb-6">
+            <div className="flex flex-wrap items-center justify-center gap-2.5 mb-8">
               <button
                 onClick={() => setActiveCategory('ALL')}
-                className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                className={`inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-all duration-200 ${
                   activeCategory === 'ALL'
-                    ? 'bg-gray-900 text-white hover:bg-gray-800'
-                    : 'bg-white text-gray-600 border hover:bg-gray-50'
+                    ? 'bg-gray-900 text-white shadow-md shadow-gray-900/20 hover:bg-gray-800'
+                    : 'bg-white/90 text-gray-600 border border-gray-200/80 hover:bg-white hover:shadow-sm'
                 }`}
               >
                 <span className="text-base">🍽️</span> Todos
@@ -1450,10 +1450,10 @@ export default function Home() {
                   <button
                     key={key}
                     onClick={() => setActiveCategory(key)}
-                    className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                    className={`inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-all duration-200 ${
                       activeCategory === key
-                        ? cfg.activeColor
-                        : 'bg-white text-gray-600 border hover:bg-gray-50'
+                        ? cfg.activeColor + ' shadow-md'
+                        : 'bg-white/90 text-gray-600 border border-gray-200/80 hover:bg-white hover:shadow-sm'
                     }`}
                   >
                     <CatIcon size={16} />
@@ -1466,21 +1466,21 @@ export default function Home() {
             {/* Stat badges */}
             {stats && (
               <div className="flex flex-wrap items-center justify-center gap-3">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white border px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/90 border border-gray-200/60 px-4 py-2 text-xs font-medium text-gray-600 shadow-sm">
                   <Store size={13} className="text-amber-600" />
-                  {stats.total} negocios
+                  <span className="font-semibold text-gray-900">{stats.total}</span> negocios
                 </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white border px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/90 border border-gray-200/60 px-4 py-2 text-xs font-medium text-gray-600 shadow-sm">
                   <ShieldCheck size={13} className="text-amber-600" />
-                  {stats.verified} verificados
+                  <span className="font-semibold text-gray-900">{stats.verified}</span> verificados
                 </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white border px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/90 border border-gray-200/60 px-4 py-2 text-xs font-medium text-gray-600 shadow-sm">
                   <PartyPopper size={13} className="text-red-500" />
-                  {stats.promotions} promociones activas
+                  <span className="font-semibold text-gray-900">{stats.promotions}</span> promos activas
                 </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white border px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/90 border border-gray-200/60 px-4 py-2 text-xs font-medium text-gray-600 shadow-sm">
                   <MapPin size={13} className="text-amber-600" />
-                  {stats.zones.length} zonas
+                  <span className="font-semibold text-gray-900">{stats.zones.length}</span> zonas
                 </span>
               </div>
             )}
@@ -1488,7 +1488,7 @@ export default function Home() {
         </section>
 
         {/* ─── ZONE FILTER BAR ─── */}
-        <section className="border-b bg-white sticky top-14 sm:top-16 z-30">
+        <section className="border-b border-gray-200/60 bg-white/80 backdrop-blur-sm sticky top-14 sm:top-16 z-30">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="flex items-center gap-2 py-3 overflow-x-auto no-scrollbar">
               {ZONES.map((zone) => (
@@ -1515,15 +1515,17 @@ export default function Home() {
 
         {/* ─── FEATURED BUSINESSES ─── */}
         {featuredBusinesses.length > 0 && !loading && (
-          <section className="py-6 sm:py-8 bg-white">
+          <section className="py-8 sm:py-10">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              <div className="flex items-center gap-2 mb-4">
-                <Sparkles size={18} className="text-amber-600" />
-                <h3 className="text-lg sm:text-xl font-bold text-gray-900">
+              <div className="flex items-center gap-2.5 mb-5">
+                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-amber-100">
+                  <Sparkles size={16} className="text-amber-600" />
+                </div>
+                <h3 className="text-lg sm:text-xl font-bold text-gray-900 tracking-tight">
                   Destacados en Los Teques
                 </h3>
               </div>
-              <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2">
+              <div className="flex gap-5 overflow-x-auto no-scrollbar pb-2">
                 {featuredBusinesses.map((b) => (
                   <FeaturedCard
                     key={b.id}
@@ -1537,11 +1539,11 @@ export default function Home() {
         )}
 
         {/* ─── MAIN CONTENT: Grid + Sidebar ─── */}
-        <section className="py-6 sm:py-8 bg-gray-50/50">
+        <section className="py-8 sm:py-10">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between mb-5">
-              <div className="flex items-center gap-2">
-                <h3 className="text-lg sm:text-xl font-bold text-gray-900">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <h3 className="text-lg sm:text-xl font-bold text-gray-900 tracking-tight">
                   Todos los establecimientos
                 </h3>
                 {!loading && (
@@ -1566,18 +1568,20 @@ export default function Home() {
               )}
             </div>
 
-            <div className="flex flex-col lg:flex-row gap-6">
+            <div className="flex flex-col lg:flex-row gap-8">
               {/* Business Grid */}
               <div className="flex-1">
                 {loading ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
                     {Array.from({ length: 6 }).map((_, i) => (
                       <BusinessCardSkeleton key={i} />
                     ))}
                   </div>
                 ) : businesses.length === 0 ? (
-                  <div className="text-center py-16">
-                    <Search size={40} className="mx-auto text-gray-300 mb-3" />
+                  <div className="text-center py-20">
+                    <div className="mx-auto w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mb-4">
+                      <Search size={28} className="text-gray-400" />
+                    </div>
                     <p className="text-sm font-medium text-gray-500">
                       No se encontraron establecimientos
                     </p>
@@ -1586,7 +1590,7 @@ export default function Home() {
                     </p>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
                     {businesses.map((b) => (
                       <BusinessCard
                         key={b.id}
@@ -1602,13 +1606,15 @@ export default function Home() {
               {allPromotions.length > 0 && (
                 <aside className="hidden lg:block w-80 flex-shrink-0">
                   <div className="sticky top-36">
-                    <div className="flex items-center gap-2 mb-3">
-                      <PartyPopper size={16} className="text-red-500" />
+                    <div className="flex items-center gap-2.5 mb-4">
+                      <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-red-100">
+                        <PartyPopper size={14} className="text-red-500" />
+                      </div>
                       <h4 className="text-sm font-bold text-gray-900">
                         Promociones activas
                       </h4>
                     </div>
-                    <div className="space-y-2 max-h-[calc(100vh-12rem)] overflow-y-auto custom-scrollbar-y pr-1">
+                    <div className="space-y-3 max-h-[calc(100vh-12rem)] overflow-y-auto custom-scrollbar-y pr-1">
                       {allPromotions.map((b) => (
                         <PromotionCard key={b.id} business={b} />
                       ))}
@@ -1620,14 +1626,16 @@ export default function Home() {
 
             {/* Promotions Section (mobile) */}
             {allPromotions.length > 0 && (
-              <div className="mt-8 lg:hidden">
-                <div className="flex items-center gap-2 mb-3">
-                  <PartyPopper size={16} className="text-red-500" />
+              <div className="mt-10 lg:hidden">
+                <div className="flex items-center gap-2.5 mb-4">
+                  <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-red-100">
+                        <PartyPopper size={14} className="text-red-500" />
+                  </div>
                   <h4 className="text-sm font-bold text-gray-900">
                     Promociones activas
                   </h4>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {allPromotions.map((b) => (
                     <PromotionCard key={b.id} business={b} />
                   ))}
@@ -1639,15 +1647,15 @@ export default function Home() {
       </main>
 
       {/* ─── FOOTER ─── */}
-      <footer className="mt-auto border-t bg-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <div className="flex items-center justify-center w-6 h-6 rounded-md bg-amber-600 text-white">
-                <Wine size={13} />
+      <footer className="mt-auto border-t border-gray-200/60 bg-white">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div className="flex items-center gap-2.5">
+              <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-gradient-to-br from-amber-500 to-amber-600 text-white">
+                <Wine size={14} />
               </div>
-              <span className="text-xs text-muted-foreground">
-                Conecta-Lt — Directorio hiperlocalizado de Los Teques, Estado
+              <div>
+                <span className="text-xs font-semibold text-gray-900">Conecta-Lt</span> — Directorio hiperlocalizado de Los Teques, Estado
                 Miranda
               </span>
             </div>
@@ -1681,7 +1689,7 @@ export default function Home() {
               </button>
             </div>
           </div>
-          <div className="text-center mt-4 pt-4 border-t">
+          <div className="text-center mt-6 pt-6 border-t border-gray-100">
             <p className="text-[11px] text-muted-foreground">
               Hecho con amor desde Los Teques 🇻🇪
             </p>
