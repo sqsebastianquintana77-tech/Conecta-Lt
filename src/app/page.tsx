@@ -174,11 +174,11 @@ function StarRating({ rating, size = 14 }: { rating: number; size?: number }) {
 function PriceRangeIndicator({ range }: { range: string }) {
   const level = range.length;
   return (
-    <span className="text-xs font-medium text-muted-foreground">
+    <span className="text-xs font-semibold tracking-wide">
       {Array.from({ length: 3 }).map((_, i) => (
         <span
           key={i}
-          className={i < level ? 'text-amber-600 font-bold' : 'text-gray-300'}
+          className={i < level ? 'text-primary' : 'text-border'}
         >
           $
         </span>
@@ -246,37 +246,37 @@ function BusinessCard({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
+      initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      whileHover={{ y: -4, boxShadow: '0 8px 25px -5px rgba(0,0,0,0.1)' }}
-      className="rounded-xl border bg-white flex flex-col transition-colors cursor-default overflow-hidden"
+      transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
+      whileHover={{ y: -4, transition: { duration: 0.25 } }}
+      className="rounded-2xl bg-card flex flex-col cursor-pointer overflow-hidden shadow-card hover:shadow-card-hover transition-shadow duration-300"
     >
       {/* Business image or gradient placeholder */}
-      <div className="relative h-36 w-full bg-gradient-to-br from-amber-100 to-amber-50 flex items-center justify-center">
+      <div className="relative h-40 w-full bg-gradient-to-br from-amber-50 via-orange-50/50 to-amber-50/80 flex items-center justify-center overflow-hidden">
         {business.image ? (
           <Image
             src={business.image}
             alt={business.name}
             fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            className="object-cover transition-transform duration-500 hover:scale-105"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
         ) : (
-          <Icon size={40} className="text-amber-300" />
+          <Icon size={40} className="text-primary/25" />
         )}
         {/* Category badge overlay */}
-        <div className="absolute top-2 left-2">
+        <div className="absolute top-2.5 left-2.5">
           <span
-            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold border backdrop-blur-sm bg-white/80 ${config.color}`}
+            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold border backdrop-blur-md bg-white/85 shadow-soft ${config.color}`}
           >
-            <Icon size={12} />
+            <Icon size={11} />
             {config.label}
           </span>
         </div>
         {hasActivePromo && (
-          <div className="absolute top-2 right-2">
-            <span className="inline-flex items-center gap-1 rounded-full bg-red-500 text-white px-2 py-0.5 text-xs font-bold shadow-sm">
+          <div className="absolute top-2.5 right-2.5">
+            <span className="inline-flex items-center gap-1 rounded-full bg-red-500/95 text-white px-2.5 py-0.5 text-[10px] font-bold shadow-md shadow-red-500/20 backdrop-blur-sm">
               <Tag size={10} />
               {business.promotions[0].discount}
             </span>
@@ -285,19 +285,19 @@ function BusinessCard({
       </div>
 
       {/* Card content */}
-      <div className="p-4 flex flex-col gap-3 flex-1">
+      <div className="p-4 flex flex-col gap-2.5 flex-1">
         {/* Name */}
       <div>
         <div className="flex items-center gap-1.5">
-          <h3 className="font-bold text-sm text-gray-900 leading-tight">
+          <h3 className="font-bold text-[13px] text-foreground leading-snug">
             {business.name}
           </h3>
           {business.verified && (
-            <ShieldCheck size={14} className="text-amber-600 flex-shrink-0" />
+            <ShieldCheck size={14} className="text-primary flex-shrink-0" />
           )}
         </div>
         {business.subcategory && (
-          <p className="text-xs text-muted-foreground mt-0.5">
+          <p className="text-[11px] text-muted-foreground mt-0.5">
             {business.subcategory}
           </p>
         )}
@@ -305,13 +305,13 @@ function BusinessCard({
 
       {/* Zone + Rating row */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-          <MapPin size={12} />
+        <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
+          <MapPin size={11} />
           {business.zone}
         </div>
         <div className="flex items-center gap-1.5">
-          <StarRating rating={business.rating} size={12} />
-          <span className="text-xs text-muted-foreground">
+          <StarRating rating={business.rating} size={11} />
+          <span className="text-[11px] text-muted-foreground">
             ({business.reviewCount})
           </span>
         </div>
@@ -326,7 +326,7 @@ function BusinessCard({
           {business.tags.slice(0, 3).map((tag) => (
             <span
               key={tag}
-              className="inline-flex items-center rounded-full bg-amber-50 border border-amber-100 px-2.5 py-0.5 text-[10px] font-medium text-amber-700"
+              className="inline-flex items-center rounded-full bg-secondary border border-border/60 px-2.5 py-0.5 text-[10px] font-medium text-muted-foreground"
             >
               {tag}
             </span>
@@ -342,17 +342,17 @@ function BusinessCard({
       {/* Feature badges */}
       <div className="flex flex-wrap gap-1.5">
         {business.hasDelivery && (
-          <span className="inline-flex items-center gap-1 text-[10px] text-gray-500">
+          <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground">
             <Truck size={11} /> Delivery
           </span>
         )}
         {business.petFriendly && (
-          <span className="inline-flex items-center gap-1 text-[10px] text-gray-500">
+          <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground">
             <PawPrint size={11} /> Pet-friendly
           </span>
         )}
         {business.hasReservations && (
-          <span className="inline-flex items-center gap-1 text-[10px] text-gray-500">
+          <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground">
             <CalendarCheck size={11} /> Reservas
           </span>
         )}
@@ -362,7 +362,7 @@ function BusinessCard({
       <Button
         variant="ghost"
         size="sm"
-        className="mt-auto w-full text-amber-700 hover:bg-amber-50 hover:text-amber-800 font-medium rounded-xl h-9"
+        className="mt-auto w-full text-primary hover:bg-primary/5 hover:text-primary/80 font-medium rounded-xl h-9 transition-colors duration-200"
         onClick={() => onSelect(business)}
       >
         Ver más
@@ -387,11 +387,11 @@ function FeaturedCard({
 
   return (
     <motion.div
-      whileHover={{ y: -6, transition: { duration: 0.25 } }}
-      className="group min-w-[300px] max-w-[340px] flex-shrink-0 snap-start rounded-2xl bg-white overflow-hidden shadow-card hover:shadow-card-hover transition-shadow duration-300"
+      whileHover={{ y: -6, transition: { duration: 0.25, ease: [0.4, 0, 0.2, 1] } }}
+      className="group min-w-[300px] max-w-[340px] flex-shrink-0 snap-start rounded-2xl bg-card overflow-hidden shadow-card hover:shadow-card-hover transition-shadow duration-300"
     >
       {/* Image or placeholder */}
-      <div className="relative h-40 w-full overflow-hidden bg-gradient-to-br from-amber-100 via-orange-50 to-amber-50">
+      <div className="relative h-44 w-full overflow-hidden bg-gradient-to-br from-amber-50 via-orange-50/50 to-amber-50/80">
         {business.image ? (
           <Image
             src={business.image}
@@ -402,17 +402,17 @@ function FeaturedCard({
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
-            <Icon size={40} className="text-amber-300/70" />
+            <Icon size={40} className="text-primary/20" />
           </div>
         )}
         <div className="absolute top-3 left-3 flex items-center gap-1.5">
           <span
-            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold border backdrop-blur-sm bg-white/80 ${config.color}`}
+            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold border backdrop-blur-md bg-white/85 shadow-soft ${config.color}`}
           >
-            <Icon size={12} />
+            <Icon size={11} />
             {config.label}
           </span>
-          <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/90 text-white px-2.5 py-1 text-[10px] font-bold backdrop-blur-sm shadow-lg shadow-amber-500/20">
+          <span className="inline-flex items-center gap-1 rounded-full bg-primary/90 text-primary-foreground px-2.5 py-1 text-[10px] font-bold backdrop-blur-sm shadow-md shadow-primary/20">
             <Sparkles size={10} /> Destacado
           </span>
         </div>
