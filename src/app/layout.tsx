@@ -53,7 +53,7 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning>
       <body
-        className={`${inter.variable} antialiased bg-background text-foreground`}
+        className={`${inter.variable} antialiased bg-background text-foreground font-sans`}
       >
         <SessionProvider>{children}</SessionProvider>
       </body>

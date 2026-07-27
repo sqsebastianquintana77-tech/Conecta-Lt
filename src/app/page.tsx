@@ -163,7 +163,7 @@ function StarRating({ rating, size = 14 }: { rating: number; size?: number }) {
           className={
             i <= Math.round(rating)
               ? 'fill-yellow-400 text-yellow-400'
-              : 'text-gray-300'
+              : 'text-border'
           }
         />
       ))}
@@ -191,10 +191,10 @@ function PriceRangeIndicator({ range }: { range: string }) {
 
 function BusinessCardSkeleton() {
   return (
-    <div className="rounded-xl border p-4 space-y-3">
+    <div className="rounded-2xl bg-card p-4 space-y-3 shadow-card">
       <div className="flex items-start justify-between">
-        <Skeleton className="h-6 w-24" />
-        <Skeleton className="h-6 w-16" />
+        <Skeleton className="h-5 w-20 rounded-full" />
+        <Skeleton className="h-5 w-14 rounded-full" />
       </div>
       <Skeleton className="h-5 w-full" />
       <Skeleton className="h-4 w-3/4" />
@@ -203,22 +203,18 @@ function BusinessCardSkeleton() {
         <Skeleton className="h-4 w-16" />
       </div>
       <div className="flex gap-1.5">
-        <Skeleton className="h-5 w-14 rounded-full" />
-        <Skeleton className="h-5 w-16 rounded-full" />
         <Skeleton className="h-5 w-12 rounded-full" />
+        <Skeleton className="h-5 w-14 rounded-full" />
+        <Skeleton className="h-5 w-10 rounded-full" />
       </div>
-      <div className="flex gap-2 pt-1">
-        <Skeleton className="h-4 w-10" />
-        <Skeleton className="h-4 w-10" />
-      </div>
-      <Skeleton className="h-8 w-full mt-2" />
+      <Skeleton className="h-9 w-full mt-1 rounded-xl" />
     </div>
   );
 }
 
 function FeaturedCardSkeleton() {
   return (
-    <div className="min-w-[280px] max-w-[320px] flex-shrink-0 rounded-xl border p-4 space-y-3">
+    <div className="min-w-[280px] max-w-[320px] flex-shrink-0 rounded-2xl bg-card p-4 space-y-3 shadow-card">
       <Skeleton className="h-6 w-24" />
       <Skeleton className="h-5 w-full" />
       <Skeleton className="h-4 w-2/3" />
@@ -419,24 +415,24 @@ function FeaturedCard({
       </div>
       <div className="p-4 flex flex-col gap-3">
       <div>
-        <h3 className="font-bold text-[15px] text-gray-900 tracking-tight">{business.name}</h3>
+        <h3 className="font-bold text-sm text-foreground tracking-tight">{business.name}</h3>
         {business.subcategory && (
           <p className="text-xs text-muted-foreground mt-0.5">{business.subcategory}</p>
         )}
       </div>
-      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-        <MapPin size={12} />
+      <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+        <MapPin size={11} />
         {business.zone}
       </div>
       <div className="flex items-center gap-2">
-        <StarRating rating={business.rating} size={13} />
+        <StarRating rating={business.rating} size={12} />
         <span className="text-xs text-muted-foreground">
           ({business.reviewCount})
         </span>
       </div>
       <Button
         size="sm"
-        className="w-full bg-amber-600 text-white hover:bg-amber-700"
+        className="w-full bg-primary text-primary-foreground hover:bg-primary/90 transition-colors duration-200"
         onClick={() => onSelect(business)}
       >
         Ver detalles
@@ -451,22 +447,22 @@ function FeaturedCard({
 
 function PromotionCard({ business }: { business: Business }) {
   return (
-    <div className="rounded-xl bg-white p-4 flex flex-col gap-2 shadow-card border-0"
+    <div className="rounded-2xl bg-card p-4 flex flex-col gap-2 shadow-card border border-border/40">
       {business.promotions.map((promo) => (
         <div key={promo.id} className="space-y-1">
           <div className="flex items-center justify-between gap-2">
-            <p className="text-xs font-semibold text-gray-900 truncate">
+            <p className="text-xs font-semibold text-foreground truncate">
               {business.name}
             </p>
             {promo.discount && (
-              <span className="inline-flex items-center rounded-full bg-red-50 text-red-600 px-2.5 py-0.5 text-[10px] font-bold flex-shrink-0 border border-red-100"
+              <span className="inline-flex items-center rounded-full bg-red-50 text-red-600 px-2.5 py-0.5 text-[10px] font-bold flex-shrink-0 border border-red-100">
                 {promo.discount}
               </span>
             )}
           </div>
-          <p className="text-xs font-medium text-amber-700">{promo.title}</p>
+          <p className="text-xs font-medium text-primary">{promo.title}</p>
           {promo.description && (
-            <p className="text-[11px] text-muted-foreground line-clamp-2 leading-relaxed">
+            <p className="text-[11px] text-muted-foreground/80 line-clamp-2 leading-relaxed">
               {promo.description}
             </p>
           )}
@@ -651,7 +647,7 @@ function DetailModal({
             </div>
           </div>
         ) : (
-          <div className="bg-gradient-to-r from-amber-600 to-amber-500 p-6 text-white rounded-t-xl">
+          <div className="bg-gradient-to-r from-primary to-primary/80 p-6 text-primary-foreground rounded-t-xl">
             <DialogHeader>
               <div className="flex items-center gap-2 mb-1">
                 <span className="inline-flex items-center gap-1 rounded-full bg-white/20 px-2.5 py-0.5 text-xs font-semibold backdrop-blur-sm">
@@ -663,7 +659,7 @@ function DetailModal({
                 )}
               </div>
               <DialogTitle className="text-xl text-white">{b.name}</DialogTitle>
-              <DialogDescription className="text-amber-100">
+              <DialogDescription className="text-primary-foreground/70">
                 {b.subcategory} · {b.zone}
                 {b.address && ` · ${b.address}`}
               </DialogDescription>
@@ -681,7 +677,7 @@ function DetailModal({
           <div className="p-6 space-y-5">
             {/* Description */}
             {b.description && (
-              <p className="text-sm text-gray-700 leading-relaxed">
+              <p className="text-sm text-foreground/80 leading-relaxed">
                 {b.description}
               </p>
             )}
@@ -689,7 +685,7 @@ function DetailModal({
             {/* Rating */}
             <div className="flex items-center gap-3">
               <StarRating rating={b.rating} size={18} />
-              <span className="text-sm font-semibold text-gray-900">
+              <span className="text-sm font-semibold text-foreground">
                 {b.rating.toFixed(1)}
               </span>
               <span className="text-sm text-muted-foreground">
@@ -700,12 +696,12 @@ function DetailModal({
             {/* Reviews */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <h4 className="text-sm font-semibold text-gray-900">
+                <h4 className="text-sm font-semibold text-foreground">
                   Reseñas
                 </h4>
                 <button
                   onClick={() => setShowReviewForm(true)}
-                  className="text-xs font-medium text-amber-600 hover:text-amber-700 flex items-center gap-1 transition-colors"
+                  className="text-xs font-medium text-primary hover:text-primary/80 flex items-center gap-1 transition-colors"
                 >
                   <MessageCircle size={12} />
                   Escribir reseña
@@ -722,7 +718,7 @@ function DetailModal({
                     className="overflow-hidden"
                   >
                     {session ? (
-                      <div className="rounded-lg bg-amber-50 border border-amber-200 p-3 space-y-3">
+                      <div className="rounded-xl bg-primary/5 border border-primary/15 p-3 space-y-3">
                         <div className="flex items-center gap-2">
                           {session.user?.image ? (
                             <img
@@ -731,18 +727,18 @@ function DetailModal({
                               className="w-6 h-6 rounded-full"
                             />
                           ) : (
-                            <div className="w-6 h-6 rounded-full bg-amber-600 flex items-center justify-center text-white text-[10px] font-bold">
+                            <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-[10px] font-bold">
                               {(session.user?.name || '?')[0]}
                             </div>
                           )}
-                          <span className="text-xs font-medium text-gray-700">
+                          <span className="text-xs font-medium text-foreground">
                             {session.user?.name}
                           </span>
                         </div>
 
                         {/* Star selector */}
                         <div className="flex items-center gap-1">
-                          <span className="text-xs text-gray-600 mr-1">Tu calificación:</span>
+                          <span className="text-xs text-muted-foreground mr-1">Tu calificación:</span>
                           {[1, 2, 3, 4, 5].map((star) => (
                             <button
                               key={star}
@@ -753,8 +749,8 @@ function DetailModal({
                                 size={20}
                                 className={
                                   star <= newReviewRating
-                                    ? 'text-amber-400 fill-amber-400'
-                                    : 'text-gray-300'
+                                    ? 'text-primary fill-primary'
+                                    : 'text-border'
                                 }
                               />
                             </button>
@@ -766,13 +762,13 @@ function DetailModal({
                           onChange={(e) => setNewReviewComment(e.target.value)}
                           placeholder="Tu experiencia en este lugar..."
                           rows={2}
-                          className="w-full text-xs rounded-lg border border-gray-200 bg-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 resize-none"
+                          className="w-full text-xs rounded-xl border border-border bg-card px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none transition-all duration-200"
                         />
 
                         <div className="flex gap-2">
                           <Button
                             size="sm"
-                            className="bg-amber-600 hover:bg-amber-700 text-white text-xs h-8"
+                            className="bg-primary hover:bg-primary/90 text-primary-foreground text-xs h-8 transition-colors duration-200"
                             onClick={handleSubmitReview}
                             disabled={newReviewRating === 0 || submittingReview}
                           >
@@ -789,13 +785,13 @@ function DetailModal({
                         </div>
                       </div>
                     ) : (
-                      <div className="rounded-lg bg-gray-50 border p-4 text-center space-y-3">
-                        <p className="text-xs text-gray-600">
+                      <div className="rounded-xl bg-muted/50 border border-border/40 p-4 text-center space-y-3">
+                        <p className="text-xs text-muted-foreground">
                           Iniciá sesión con Google para dejar tu reseña
                         </p>
                         <button
                           onClick={() => signIn('google')}
-                          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white border border-gray-300 hover:bg-gray-50 text-sm font-medium text-gray-700 transition-colors shadow-sm"
+                          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-card border border-border hover:bg-muted/50 text-sm font-medium text-foreground transition-colors shadow-soft"
                         >
                           <svg className="w-4 h-4" viewBox="0 0 24 24">
                             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
@@ -817,19 +813,19 @@ function DetailModal({
                 {dynamicReviews.map((review) => (
                   <div
                     key={review.id}
-                    className="rounded-lg bg-blue-50 border border-blue-100 p-3 space-y-1"
+                    className="rounded-xl bg-primary/5 border border-primary/10 p-3 space-y-1"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-medium">Google</span>
-                        <span className="text-xs font-medium text-gray-700">
+                        <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-md font-medium">Google</span>
+                        <span className="text-xs font-medium text-foreground">
                           {review.authorName}
                         </span>
                       </div>
                       <StarRating rating={review.rating} size={11} />
                     </div>
                     {review.comment && (
-                      <p className="text-xs text-gray-600">{review.comment}</p>
+                      <p className="text-xs text-foreground/70">{review.comment}</p>
                     )}
                   </div>
                 ))}
@@ -837,21 +833,21 @@ function DetailModal({
                 {detail && detail.reviews.map((review) => (
                   <div
                     key={review.id}
-                    className="rounded-lg bg-gray-50 p-3 space-y-1"
+                    className="rounded-xl bg-muted/50 p-3 space-y-1"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-medium text-gray-700">
+                      <span className="text-xs font-medium text-foreground">
                         {review.author || 'Anónimo'}
                       </span>
                       <StarRating rating={review.rating} size={11} />
                     </div>
                     {review.comment && (
-                      <p className="text-xs text-gray-600">{review.comment}</p>
+                      <p className="text-xs text-foreground/70">{review.comment}</p>
                     )}
                   </div>
                 ))}
                 {dynamicReviews.length === 0 && (!detail || detail.reviews.length === 0) && (
-                  <p className="text-xs text-gray-400 text-center py-2">
+                  <p className="text-xs text-muted-foreground text-center py-2">
                     Aún no hay reseñas. ¡Sé el primero!
                   </p>
                 )}
@@ -865,9 +861,9 @@ function DetailModal({
               {/* Specialty */}
               {b.specialty && (
                 <div className="flex items-start gap-2">
-                  <Wine size={16} className="text-amber-600 mt-0.5 flex-shrink-0" />
+                  <Wine size={16} className="text-primary mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="text-xs font-semibold text-gray-900">
+                    <p className="text-xs font-semibold text-foreground">
                       Especialidad
                     </p>
                     <p className="text-xs text-muted-foreground">
@@ -880,9 +876,9 @@ function DetailModal({
               {/* Top Brands */}
               {b.topBrands && (
                 <div className="flex items-start gap-2">
-                  <Sparkles size={16} className="text-amber-600 mt-0.5 flex-shrink-0" />
+                  <Sparkles size={16} className="text-primary mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="text-xs font-semibold text-gray-900">
+                    <p className="text-xs font-semibold text-foreground">
                       Marcas destacadas
                     </p>
                     <p className="text-xs text-muted-foreground">{b.topBrands}</p>
@@ -893,9 +889,9 @@ function DetailModal({
               {/* Hours */}
               {b.hours && (
                 <div className="flex items-start gap-2">
-                  <Clock size={16} className="text-amber-600 mt-0.5 flex-shrink-0" />
+                  <Clock size={16} className="text-primary mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="text-xs font-semibold text-gray-900">Horario</p>
+                    <p className="text-xs font-semibold text-foreground">Horario</p>
                     <p className="text-xs text-muted-foreground">{b.hours}</p>
                   </div>
                 </div>
@@ -904,9 +900,9 @@ function DetailModal({
               {/* Happy Hour */}
               {b.happyHour && (
                 <div className="flex items-start gap-2">
-                  <PartyPopper size={16} className="text-amber-600 mt-0.5 flex-shrink-0" />
+                  <PartyPopper size={16} className="text-primary mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="text-xs font-semibold text-gray-900">
+                    <p className="text-xs font-semibold text-foreground">
                       Happy Hour
                     </p>
                     <p className="text-xs text-muted-foreground">
@@ -918,9 +914,9 @@ function DetailModal({
 
               {/* Price Range */}
               <div className="flex items-start gap-2">
-                <Tag size={16} className="text-amber-600 mt-0.5 flex-shrink-0" />
+                <Tag size={16} className="text-primary mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="text-xs font-semibold text-gray-900">Rango de precio</p>
+                  <p className="text-xs font-semibold text-foreground">Rango de precio</p>
                   <PriceRangeIndicator range={b.priceRange} />
                 </div>
               </div>
@@ -928,9 +924,9 @@ function DetailModal({
               {/* Phone */}
               {b.phone && (
                 <div className="flex items-start gap-2">
-                  <Phone size={16} className="text-amber-600 mt-0.5 flex-shrink-0" />
+                  <Phone size={16} className="text-primary mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="text-xs font-semibold text-gray-900">Teléfono</p>
+                    <p className="text-xs font-semibold text-foreground">Teléfono</p>
                     <p className="text-xs text-muted-foreground">{b.phone}</p>
                   </div>
                 </div>
@@ -940,17 +936,17 @@ function DetailModal({
             {/* Feature badges */}
             <div className="flex flex-wrap gap-2">
               {b.hasDelivery && (
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-green-100 text-green-700 px-3 py-1 text-xs font-medium">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 px-3 py-1 text-xs font-medium">
                   <Truck size={13} /> Delivery
                 </span>
               )}
               {b.petFriendly && (
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-purple-100 text-purple-700 px-3 py-1 text-xs font-medium">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-50 text-violet-700 border border-violet-100 px-3 py-1 text-xs font-medium">
                   <PawPrint size={13} /> Pet-friendly
                 </span>
               )}
               {b.hasReservations && (
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 text-amber-700 px-3 py-1 text-xs font-medium">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 text-primary border border-primary/15 px-3 py-1 text-xs font-medium">
                   <CalendarCheck size={13} /> Reservas
                 </span>
               )}
@@ -962,7 +958,7 @@ function DetailModal({
                 {b.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600"
+                    className="inline-flex items-center rounded-full bg-secondary px-2.5 py-0.5 text-xs font-medium text-muted-foreground"
                   >
                     {tag}
                   </span>
@@ -973,13 +969,13 @@ function DetailModal({
             {/* Promotions */}
             {detail && detail.promotions.length > 0 && (
               <div className="space-y-2">
-                <h4 className="text-sm font-semibold text-gray-900">
+                <h4 className="text-sm font-semibold text-foreground">
                   Promociones activas
                 </h4>
                 {detail.promotions.map((promo) => (
                   <div
                     key={promo.id}
-                    className="rounded-lg border border-red-200 bg-red-50 p-3"
+                    className="rounded-xl border border-red-200/80 bg-red-50/80 p-3"
                   >
                     <div className="flex items-center justify-between gap-2 mb-1">
                       <span className="text-xs font-bold text-red-700">
@@ -992,7 +988,7 @@ function DetailModal({
                       )}
                     </div>
                     {promo.description && (
-                      <p className="text-xs text-red-600/80">
+                      <p className="text-xs text-red-600/70">
                         {promo.description}
                       </p>
                     )}
@@ -1004,7 +1000,7 @@ function DetailModal({
             {/* Photo Gallery */}
             {hasGallery && (
               <div className="space-y-2">
-                <h4 className="text-sm font-semibold text-gray-900">
+                <h4 className="text-sm font-semibold text-foreground">
                   Fotos y promociones
                 </h4>
                 <div className="grid grid-cols-3 gap-2">
@@ -1015,7 +1011,7 @@ function DetailModal({
                         setGalleryIndex(i);
                         setShowGallery(true);
                       }}
-                      className="relative aspect-square rounded-lg overflow-hidden border hover:ring-2 hover:ring-amber-400 transition-all"
+                      className="relative aspect-square rounded-lg overflow-hidden border hover:ring-2 hover:ring-primary/50 transition-all duration-200"
                     >
                       <Image
                         src={img}
@@ -1032,7 +1028,7 @@ function DetailModal({
                     setGalleryIndex(0);
                     setShowGallery(true);
                   }}
-                  className="text-xs text-amber-600 hover:text-amber-700 font-medium flex items-center gap-1"
+                  className="text-xs text-primary hover:text-primary/80 font-medium flex items-center gap-1 transition-colors"
                 >
                   Ver galería completa <ChevronRight size={12} />
                 </button>
@@ -1042,8 +1038,8 @@ function DetailModal({
             {/* Google Maps */}
             {googleMapsEmbedUrl && (
               <div className="space-y-2">
-                <h4 className="text-sm font-semibold text-gray-900 flex items-center gap-1.5">
-                  <MapPin size={14} className="text-amber-600" />
+                <h4 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+                  <MapPin size={14} className="text-primary" />
                   Ubicación
                 </h4>
                 <div className="rounded-lg overflow-hidden border">
@@ -1072,7 +1068,7 @@ function DetailModal({
                   rel="noopener noreferrer"
                   className="flex-1"
                 >
-                  <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
+                  <Button className="w-full bg-green-600 hover:bg-green-700 text-white transition-colors duration-200">
                     <MessageCircle size={16} />
                     WhatsApp
                   </Button>
@@ -1087,7 +1083,7 @@ function DetailModal({
                 >
                   <Button
                     variant="outline"
-                    className="w-full border-pink-300 text-pink-700 hover:bg-pink-50"
+                    className="w-full border-pink-200 text-pink-700 hover:bg-pink-50/80 transition-colors duration-200"
                   >
                     <Instagram size={16} />
                     Instagram
@@ -1103,7 +1099,7 @@ function DetailModal({
                 >
                   <Button
                     variant="outline"
-                    className="w-full border-gray-300 text-gray-700 hover:bg-gray-50"
+                    className="w-full border-border text-foreground hover:bg-muted transition-colors duration-200"
                   >
                     <Globe size={16} />
                     Página web
@@ -1225,40 +1221,40 @@ export default function Home() {
               className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden"
             >
               {/* Top gradient bar */}
-              <div className="h-1.5 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600" />
+              <div className="h-1.5 bg-gradient-to-r from-primary via-amber-500 to-primary/80" />
               
               <div className="p-10 text-center">
                 {/* Icon */}
-                <div className="mx-auto w-20 h-20 rounded-2xl bg-gradient-to-br from-amber-100 to-orange-50 flex items-center justify-center mb-6 shadow-sm">
-                  <Wine size={36} className="text-amber-600" />
+                <div className="mx-auto w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center mb-6 shadow-soft">
+                  <Wine size={36} className="text-primary" />
                 </div>
                 
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                <h2 className="text-2xl font-bold text-foreground mb-2">
                   Verificación de edad
                 </h2>
-                <p className="text-gray-600 mb-2 text-sm">
+                <p className="text-muted-foreground mb-2 text-sm">
                   Este sitio contiene información sobre bebidas alcohólicas.
                 </p>
-                <p className="text-gray-800 font-semibold mb-8">
+                <p className="text-foreground font-semibold mb-8">
                   ¿Confirmás que sos mayor de 18 años?
                 </p>
 
                 <div className="flex flex-col gap-3">
                   <button
                     onClick={() => handleAgeVerify(true)}
-                    className="w-full py-3.5 px-6 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-semibold text-base transition-all active:scale-[0.98] shadow-lg shadow-amber-600/30"
+                    className="w-full py-3.5 px-6 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-base transition-all duration-200 active:scale-[0.98] shadow-lg shadow-primary/25"
                   >
                     Sí, soy mayor de edad
                   </button>
                   <button
                     onClick={() => handleAgeVerify(false)}
-                    className="w-full py-3.5 px-6 rounded-2xl bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium text-base transition-all active:scale-[0.98]"
+                    className="w-full py-3.5 px-6 rounded-2xl bg-muted hover:bg-muted/80 text-muted-foreground font-medium text-base transition-all duration-200 active:scale-[0.98]"
                   >
                     No, soy menor de edad
                   </button>
                 </div>
 
-                <p className="text-[11px] text-gray-400 mt-8">
+                <p className="text-[11px] text-muted-foreground mt-8">
                   Beber con moderación. Prohibida la venta de alcohol a menores de edad.
                 </p>
               </div>
@@ -1269,20 +1265,20 @@ export default function Home() {
 
       {/* ─── MINOR BLOCKED SCREEN ─── */}
       {ageDismissed && !ageVerified && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-gray-50 p-4">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background p-4">
           <div className="text-center max-w-sm">
-            <div className="mx-auto w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mb-4">
+            <div className="mx-auto w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mb-4">
               <X size={32} className="text-red-500" />
             </div>
-            <h2 className="text-xl font-bold text-gray-900 mb-2">
+            <h2 className="text-xl font-bold text-foreground mb-2">
               Acceso restringido
             </h2>
-            <p className="text-gray-600 text-sm mb-6">
+            <p className="text-muted-foreground text-sm mb-6">
               Lo sentimos, debés ser mayor de 18 años para acceder a este contenido.
             </p>
             <button
               onClick={() => setAgeDismissed(false)}
-              className="text-amber-600 hover:text-amber-700 font-medium text-sm underline underline-offset-4"
+              className="text-primary hover:text-primary/80 font-medium text-sm underline transition-colors underline-offset-4"
             >
               Volver a verificar
             </button>
@@ -1296,11 +1292,11 @@ export default function Home() {
           <div className="flex items-center justify-between h-14 sm:h-16">
             {/* Logo */}
             <div className="flex items-center gap-2">
-              <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 text-white shadow-md shadow-amber-500/25">
+              <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-primary/85 text-primary-foreground shadow-md shadow-primary/25">
                 <Wine size={18} />
               </div>
               <div>
-                <h1 className="text-base sm:text-lg font-bold text-gray-900 leading-tight tracking-tight">
+                <h1 className="text-base sm:text-lg font-bold text-foreground leading-tight tracking-tight">
                   Conecta-Lt
                 </h1>
                 <p className="text-[10px] sm:text-xs text-muted-foreground leading-tight hidden sm:block">
@@ -1324,7 +1320,7 @@ export default function Home() {
                     className={`inline-flex items-center gap-1 rounded-full px-2.5 sm:px-3 py-1.5 text-xs font-medium transition-colors ${
                       activeCategory === key
                         ? cfg.activeColor
-                        : 'text-gray-600 hover:bg-gray-100'
+                        : 'text-muted-foreground hover:bg-muted/60'
                     }`}
                   >
                     <NavIcon size={14} className="sm:hidden" />
@@ -1339,7 +1335,7 @@ export default function Home() {
                     setActiveZone('Todas');
                     setSearchQuery('');
                   }}
-                  className="relative inline-flex items-center gap-1 rounded-full px-2.5 sm:px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-100 transition-colors"
+                  className="relative inline-flex items-center gap-1 rounded-full px-2.5 sm:px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted/60 transition-colors"
                 >
                   <PartyPopper size={14} />
                   <span className="hidden sm:inline">Promociones</span>
@@ -1356,22 +1352,22 @@ export default function Home() {
                     <img
                       src={session.user.image}
                       alt=""
-                      className="w-7 h-7 rounded-full border-2 border-amber-200"
+                      className="w-7 h-7 rounded-full border-2 border-primary/20"
                     />
                   ) : (
-                    <div className="w-7 h-7 rounded-full bg-amber-600 flex items-center justify-center text-white text-xs font-bold border-2 border-amber-200">
+                    <div className="w-7 h-7 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-xs font-bold border-2 border-primary/20">
                       {(session.user?.name || '?')[0]}
                     </div>
                   )}
                   <button
                     onClick={() => window.location.href = '/admin'}
-                    className="hidden sm:inline-flex text-[11px] text-amber-700 hover:text-amber-900 font-medium transition-colors"
+                    className="hidden sm:inline-flex text-[11px] text-primary hover:text-primary/80 font-medium transition-colors"
                   >
                     Admin
                   </button>
                   <button
                     onClick={() => signOut()}
-                    className="hidden sm:inline-flex text-[11px] text-gray-500 hover:text-gray-700 transition-colors"
+                    className="hidden sm:inline-flex text-[11px] text-muted-foreground hover:text-foreground transition-colors"
                   >
                     Salir
                   </button>
@@ -1379,7 +1375,7 @@ export default function Home() {
               ) : (
                 <button
                   onClick={() => signIn('google')}
-                  className="inline-flex items-center gap-1.5 rounded-full px-2.5 sm:px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-100 transition-colors ml-1"
+                  className="inline-flex items-center gap-1.5 rounded-full px-2.5 sm:px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted/60 transition-colors ml-1"
                 >
                   <svg className="w-4 h-4" viewBox="0 0 24 24">
                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
@@ -1397,18 +1393,18 @@ export default function Home() {
 
       <main className="flex-1">
         {/* ─── HERO SECTION ─── */}
-        <section className="relative overflow-hidden py-14 sm:py-20">
+        <section className="relative overflow-hidden py-16 sm:py-24 hero-gradient">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 leading-tight tracking-tight text-balance">
+            <h2 className="text-3xl sm:text-4xl lg:text-[2.85rem] font-extrabold text-foreground mb-3 leading-[1.15] tracking-tight text-balance">
               Descubre los mejores licores de{' '}
               <span className="bg-gradient-to-r from-amber-600 to-orange-500 bg-clip-text text-transparent">Los Teques</span>
             </h2>
-            <p className="text-sm sm:text-base text-muted-foreground mb-8 max-w-lg mx-auto leading-relaxed">
+            <p className="text-sm sm:text-[15px] text-muted-foreground mb-10 max-w-md mx-auto leading-relaxed">
               Licorerías, tascas y bodegones. Encuentra tu lugar favorito para disfrutar.
             </p>
 
             {/* Search bar */}
-            <div className="flex items-center gap-2 max-w-xl mx-auto mb-8">
+            <div className="flex items-center gap-2.5 max-w-xl mx-auto mb-10">
               <div className="relative flex-1">
                 <Search
                   size={16}
@@ -1418,11 +1414,11 @@ export default function Home() {
                   placeholder="Buscar por nombre, marca, especialidad..."
                   value={searchQuery}
                   onChange={(e) => handleSearchChange(e.target.value)}
-                  className="pl-10 h-12 rounded-xl bg-white/90 backdrop-blur-sm border-gray-200/80 text-sm shadow-sm focus-visible:ring-amber-500/20 focus-visible:border-amber-400"
+                  className="pl-10 h-12 rounded-xl bg-card/90 backdrop-blur-sm border-border/60 text-sm shadow-card focus-visible:ring-primary/20 focus-visible:border-primary/40 transition-all duration-200"
                 />
               </div>
               <Button
-                className="bg-amber-600 hover:bg-amber-700 text-white h-12 px-6 rounded-xl font-medium shadow-md shadow-amber-600/25"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground h-12 px-6 rounded-xl font-medium shadow-md shadow-primary/25 transition-colors duration-200"
                 onClick={fetchData}
               >
                 <Search size={16} />
@@ -1431,13 +1427,13 @@ export default function Home() {
             </div>
 
             {/* Category pills */}
-            <div className="flex flex-wrap items-center justify-center gap-2.5 mb-8">
+            <div className="flex flex-wrap items-center justify-center gap-2.5 mb-10">
               <button
                 onClick={() => setActiveCategory('ALL')}
                 className={`inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-all duration-200 ${
                   activeCategory === 'ALL'
-                    ? 'bg-gray-900 text-white shadow-md shadow-gray-900/20 hover:bg-gray-800'
-                    : 'bg-white/90 text-gray-600 border border-gray-200/80 hover:bg-white hover:shadow-sm'
+                    ? 'bg-foreground text-background shadow-md shadow-foreground/15 hover:bg-foreground/90'
+                    : 'bg-card/90 text-muted-foreground border border-border/60 hover:bg-card hover:shadow-soft'
                 }`}
               >
                 <span className="text-base">🍽️</span> Todos
@@ -1453,7 +1449,7 @@ export default function Home() {
                     className={`inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-all duration-200 ${
                       activeCategory === key
                         ? cfg.activeColor + ' shadow-md'
-                        : 'bg-white/90 text-gray-600 border border-gray-200/80 hover:bg-white hover:shadow-sm'
+                        : 'bg-card/90 text-muted-foreground border border-border/60 hover:bg-card hover:shadow-soft'
                     }`}
                   >
                     <CatIcon size={16} />
@@ -1466,21 +1462,21 @@ export default function Home() {
             {/* Stat badges */}
             {stats && (
               <div className="flex flex-wrap items-center justify-center gap-3">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/90 border border-gray-200/60 px-4 py-2 text-xs font-medium text-gray-600 shadow-sm">
-                  <Store size={13} className="text-amber-600" />
-                  <span className="font-semibold text-gray-900">{stats.total}</span> negocios
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-card/90 border border-border/50 px-4 py-2 text-xs font-medium text-muted-foreground shadow-soft">
+                  <Store size={13} className="text-primary" />
+                  <span className="font-semibold text-foreground">{stats.total}</span> negocios
                 </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/90 border border-gray-200/60 px-4 py-2 text-xs font-medium text-gray-600 shadow-sm">
-                  <ShieldCheck size={13} className="text-amber-600" />
-                  <span className="font-semibold text-gray-900">{stats.verified}</span> verificados
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/90 border border-border/50 px-4 py-2 text-xs font-medium text-muted-foreground shadow-soft">
+                  <ShieldCheck size={13} className="text-primary" />
+                  <span className="font-semibold text-foreground">{stats.verified}</span> verificados
                 </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/90 border border-gray-200/60 px-4 py-2 text-xs font-medium text-gray-600 shadow-sm">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-card/90 border border-border/50 px-4 py-2 text-xs font-medium text-muted-foreground shadow-soft">
                   <PartyPopper size={13} className="text-red-500" />
-                  <span className="font-semibold text-gray-900">{stats.promotions}</span> promos activas
+                  <span className="font-semibold text-foreground">{stats.promotions}</span> promos activas
                 </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/90 border border-gray-200/60 px-4 py-2 text-xs font-medium text-gray-600 shadow-sm">
-                  <MapPin size={13} className="text-amber-600" />
-                  <span className="font-semibold text-gray-900">{stats.zones.length}</span> zonas
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-card/90 border border-border/50 px-4 py-2 text-xs font-medium text-muted-foreground shadow-soft">
+                  <MapPin size={13} className="text-primary" />
+                  <span className="font-semibold text-foreground">{stats.zones.length}</span> zonas
                 </span>
               </div>
             )}
@@ -1488,7 +1484,7 @@ export default function Home() {
         </section>
 
         {/* ─── ZONE FILTER BAR ─── */}
-        <section className="border-b border-gray-200/60 bg-white/80 backdrop-blur-sm sticky top-14 sm:top-16 z-30">
+        <section className="border-b border-border/40 bg-background/80 backdrop-blur-sm sticky top-14 sm:top-16 z-30">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="flex items-center gap-2 py-3 overflow-x-auto no-scrollbar">
               {ZONES.map((zone) => (
@@ -1497,8 +1493,8 @@ export default function Home() {
                   onClick={() => setActiveZone(zone)}
                   className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium whitespace-nowrap transition-colors flex-shrink-0 ${
                     activeZone === zone
-                      ? 'bg-amber-600 text-white'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-muted-foreground hover:bg-muted/80'
                   }`}
                 >
                   {zone === 'Todas' ? (
@@ -1518,10 +1514,10 @@ export default function Home() {
           <section className="py-8 sm:py-10">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               <div className="flex items-center gap-2.5 mb-5">
-                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-amber-100">
-                  <Sparkles size={16} className="text-amber-600" />
+                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10">
+                  <Sparkles size={16} className="text-primary" />
                 </div>
-                <h3 className="text-lg sm:text-xl font-bold text-gray-900 tracking-tight">
+                <h3 className="text-lg sm:text-xl font-bold text-foreground tracking-tight">
                   Destacados en Los Teques
                 </h3>
               </div>
@@ -1543,11 +1539,11 @@ export default function Home() {
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <h3 className="text-lg sm:text-xl font-bold text-gray-900 tracking-tight">
+                <h3 className="text-lg sm:text-xl font-bold text-foreground tracking-tight">
                   Todos los establecimientos
                 </h3>
                 {!loading && (
-                  <span className="inline-flex items-center justify-center rounded-full bg-amber-100 text-amber-700 px-2.5 py-0.5 text-xs font-bold">
+                  <span className="inline-flex items-center justify-center rounded-full bg-primary/10 text-primary px-2.5 py-0.5 text-xs font-bold">
                     {businesses.length}
                   </span>
                 )}
@@ -1579,10 +1575,10 @@ export default function Home() {
                   </div>
                 ) : businesses.length === 0 ? (
                   <div className="text-center py-20">
-                    <div className="mx-auto w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mb-4">
-                      <Search size={28} className="text-gray-400" />
+                    <div className="mx-auto w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mb-4">
+                      <Search size={28} className="text-muted-foreground" />
                     </div>
-                    <p className="text-sm font-medium text-gray-500">
+                    <p className="text-sm font-medium text-foreground">
                       No se encontraron establecimientos
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">
@@ -1607,10 +1603,10 @@ export default function Home() {
                 <aside className="hidden lg:block w-80 flex-shrink-0">
                   <div className="sticky top-36">
                     <div className="flex items-center gap-2.5 mb-4">
-                      <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-red-100">
+                      <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-red-50">
                         <PartyPopper size={14} className="text-red-500" />
                       </div>
-                      <h4 className="text-sm font-bold text-gray-900">
+                      <h4 className="text-sm font-bold text-foreground">
                         Promociones activas
                       </h4>
                     </div>
@@ -1628,10 +1624,10 @@ export default function Home() {
             {allPromotions.length > 0 && (
               <div className="mt-10 lg:hidden">
                 <div className="flex items-center gap-2.5 mb-4">
-                  <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-red-100">
+                  <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-red-50">
                         <PartyPopper size={14} className="text-red-500" />
                   </div>
-                  <h4 className="text-sm font-bold text-gray-900">
+                  <h4 className="text-sm font-bold text-foreground">
                     Promociones activas
                   </h4>
                 </div>
@@ -1647,17 +1643,16 @@ export default function Home() {
       </main>
 
       {/* ─── FOOTER ─── */}
-      <footer className="mt-auto border-t border-gray-200/60 bg-white">
+      <footer className="mt-auto border-t border-border/40 bg-card">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-2.5">
-              <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-gradient-to-br from-amber-500 to-amber-600 text-white">
+              <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-gradient-to-br from-primary to-primary/85 text-primary-foreground">
                 <Wine size={14} />
               </div>
-              <div>
-                <span className="text-xs font-semibold text-gray-900">Conecta-Lt</span> — Directorio hiperlocalizado de Los Teques, Estado
-                Miranda
-              </span>
+              <p className="text-xs text-foreground/80">
+                Conecta-Lt — Directorio hiperlocalizado de Los Teques, Estado Miranda
+              </p>
             </div>
             <div className="flex items-center gap-4">
               {(
@@ -1671,7 +1666,7 @@ export default function Home() {
                     setSearchQuery('');
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
-                  className="text-xs text-muted-foreground hover:text-amber-600 transition-colors"
+                  className="text-xs text-muted-foreground hover:text-primary transition-colors"
                 >
                   {cfg.label}
                 </button>
@@ -1683,13 +1678,13 @@ export default function Home() {
                   setSearchQuery('');
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
-                className="text-xs text-muted-foreground hover:text-amber-600 transition-colors"
+                className="text-xs text-muted-foreground hover:text-primary transition-colors"
               >
                 Promociones
               </button>
             </div>
           </div>
-          <div className="text-center mt-6 pt-6 border-t border-gray-100">
+          <div className="text-center mt-6 pt-6 border-t border-border/30">
             <p className="text-[11px] text-muted-foreground">
               Hecho con amor desde Los Teques 🇻🇪
             </p>
