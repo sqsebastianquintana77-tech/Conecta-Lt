@@ -188,7 +188,7 @@ export const businesses: Omit<StaticBusiness, 'promotions' | 'reviews'>[] = [
     reviewCount: 1,
     verified: true,
     featured: true,
-    image: "/businesses/donsancho/logo.jpg",
+    image: "/businesses/donsancho/logo.png",
     gallery: [
       "/businesses/donsancho/lico_1.jpg",
       "/businesses/donsancho/lico_2.jpg",
