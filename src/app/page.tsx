@@ -494,6 +494,7 @@ function DetailModal({
   const [galleryIndex, setGalleryIndex] = useState(0);
   const [showGallery, setShowGallery] = useState(false);
   const [expandedPromo, setExpandedPromo] = useState<Promotion | null>(null);
+  const [promoIndex, setPromoIndex] = useState(0);
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [newReviewRating, setNewReviewRating] = useState(0);
   const [newReviewComment, setNewReviewComment] = useState('');
@@ -518,6 +519,7 @@ function DetailModal({
     setShowReviewForm(false);
     setNewReviewRating(0);
     setNewReviewComment('');
+    setPromoIndex(0);
   }, [business, open]);
 
   const handleSubmitReview = async () => {
@@ -914,7 +916,7 @@ function DetailModal({
               </div>
             )}
 
-            {/* Promotions — horizontal swipeable on mobile, vertical on desktop */}
+            {/* Promotions — drag carousel on mobile, vertical on desktop */}
             {detail && detail.promotions.length > 0 && (
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
@@ -922,39 +924,71 @@ function DetailModal({
                     Promociones activas
                   </h4>
                   {detail.promotions.length > 1 && (
-                    <span className="text-[10px] text-muted-foreground lg:hidden">Desliza para ver más →</span>
+                    <span className="text-[10px] text-muted-foreground lg:hidden">Desliza ← →</span>
                   )}
                 </div>
-                {/* Mobile: horizontal carousel */}
+                {/* Mobile: Framer Motion drag carousel */}
                 <div className="lg:hidden">
-                  <div
-                    className="swipe-x no-scrollbar flex gap-3 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2 -mx-1 px-1"
-                  >
-                    {detail.promotions.map((promo) => (
-                      <button
-                        key={promo.id}
-                        onClick={() => setExpandedPromo(promo)}
-                        className="min-w-[220px] max-w-[75vw] flex-shrink-0 snap-start text-left rounded-xl border border-red-500/20 bg-red-500/10 p-3 hover:bg-red-500/15 active:scale-[0.98] transition-all duration-200"
-                      >
-                        <div className="flex items-center justify-between gap-2 mb-1">
-                          <span className="text-xs font-bold text-red-400 truncate">
-                            {promo.title}
-                          </span>
-                          {promo.discount && (
-                            <span className="inline-flex items-center rounded-full bg-red-600 text-white px-2 py-0.5 text-[10px] font-bold flex-shrink-0">
-                              {promo.discount}
-                            </span>
-                          )}
+                  <div className="overflow-hidden rounded-xl">
+                    <motion.div
+                      drag="x"
+                      dragMomentum={false}
+                      dragElastic={0.15}
+                      onDragEnd={(_, info) => {
+                        const threshold = 50;
+                        if (info.offset.x < -threshold && promoIndex < detail.promotions.length - 1) {
+                          setPromoIndex((p) => p + 1);
+                        } else if (info.offset.x > threshold && promoIndex > 0) {
+                          setPromoIndex((p) => p - 1);
+                        }
+                      }}
+                      animate={{ x: `-${promoIndex * 100}%` }}
+                      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                      className="flex cursor-grab active:cursor-grabbing"
+                    >
+                      {detail.promotions.map((promo) => (
+                        <div key={promo.id} className="w-full flex-shrink-0 px-0.5">
+                          <button
+                            onClick={() => setExpandedPromo(promo)}
+                            className="w-full text-left rounded-xl border border-red-500/20 bg-red-500/10 p-3 active:scale-[0.98] transition-transform duration-200"
+                          >
+                            <div className="flex items-center justify-between gap-2 mb-1">
+                              <span className="text-xs font-bold text-red-400 truncate">
+                                {promo.title}
+                              </span>
+                              {promo.discount && (
+                                <span className="inline-flex items-center rounded-full bg-red-600 text-white px-2 py-0.5 text-[10px] font-bold flex-shrink-0">
+                                  {promo.discount}
+                                </span>
+                              )}
+                            </div>
+                            {promo.description && (
+                              <p className="text-xs text-red-400/70 line-clamp-2">
+                                {promo.description}
+                              </p>
+                            )}
+                            <p className="text-[10px] text-muted-foreground mt-1.5">Toca para ver más</p>
+                          </button>
                         </div>
-                        {promo.description && (
-                          <p className="text-xs text-red-400/70 line-clamp-2">
-                            {promo.description}
-                          </p>
-                        )}
-                        <p className="text-[10px] text-muted-foreground mt-1.5">Toca para ver más</p>
-                      </button>
-                    ))}
+                      ))}
+                    </motion.div>
                   </div>
+                  {/* Dots indicator */}
+                  {detail.promotions.length > 1 && (
+                    <div className="flex justify-center gap-1.5 mt-2">
+                      {detail.promotions.map((_, i) => (
+                        <button
+                          key={i}
+                          onClick={() => setPromoIndex(i)}
+                          className={`h-1.5 rounded-full transition-all duration-200 ${
+                            i === promoIndex
+                              ? 'bg-red-400 w-4'
+                              : 'bg-white/20 w-1.5 hover:bg-white/40'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  )}
                 </div>
                 {/* Desktop: vertical list */}
                 <div className="hidden lg:block space-y-2">
@@ -1201,7 +1235,15 @@ function DetailModal({
 
       {/* Expanded Promotion Modal */}
       <Dialog open={!!expandedPromo} onOpenChange={(o) => { if (!o) setExpandedPromo(null); }}>
-        <DialogContent className="sm:max-w-lg p-0 gap-0 overflow-hidden">
+        <DialogContent className="sm:max-w-lg p-0 gap-0 overflow-y-auto max-h-[85vh]" showCloseButton={false}>
+          {/* Custom close button — large touch target for mobile */}
+          <button
+            onClick={() => setExpandedPromo(null)}
+            className="absolute top-3 right-3 z-50 flex items-center justify-center w-10 h-10 rounded-full bg-black/50 text-white hover:bg-black/70 active:scale-90 transition-all duration-150 backdrop-blur-sm"
+            aria-label="Cerrar"
+          >
+            <X size={20} />
+          </button>
           <div className="bg-gradient-to-r from-red-600 to-red-500 p-6">
             <div className="flex items-center justify-between gap-3">
               <div className="flex-1 min-w-0">
