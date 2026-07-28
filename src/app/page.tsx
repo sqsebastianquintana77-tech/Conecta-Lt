@@ -928,7 +928,7 @@ function DetailModal({
                   )}
                 </div>
                 {/* Mobile: Framer Motion drag carousel */}
-                <div className="lg:hidden">
+                <div className="lg:hidden" onPointerDownCapture={(e) => e.stopPropagation()}>
                   <div className="overflow-hidden rounded-xl">
                     <motion.div
                       drag="x"
