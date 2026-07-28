@@ -231,6 +231,13 @@ html {
   scrollbar-width: none;
 }
 
+/* ── Horizontal swipe carousel — ensures touch panning works inside scrollable parents ── */
+.swipe-x {
+  touch-action: pan-x;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
 /* ── Hero Gradient Background (Nocturnal) ── */
 .hero-gradient {
   background:

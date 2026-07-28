@@ -914,36 +914,75 @@ function DetailModal({
               </div>
             )}
 
-            {/* Promotions */}
+            {/* Promotions — horizontal swipeable on mobile, vertical on desktop */}
             {detail && detail.promotions.length > 0 && (
               <div className="space-y-2">
-                <h4 className="text-sm font-semibold text-foreground">
-                  Promociones activas
-                </h4>
-                {detail.promotions.map((promo) => (
-                  <button
-                    key={promo.id}
-                    onClick={() => setExpandedPromo(promo)}
-                    className="w-full text-left rounded-xl border border-red-500/20 bg-red-500/10 p-3 hover:bg-red-500/15 transition-colors duration-200"
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-semibold text-foreground">
+                    Promociones activas
+                  </h4>
+                  {detail.promotions.length > 1 && (
+                    <span className="text-[10px] text-muted-foreground lg:hidden">Desliza para ver más →</span>
+                  )}
+                </div>
+                {/* Mobile: horizontal carousel */}
+                <div className="lg:hidden">
+                  <div
+                    className="swipe-x no-scrollbar flex gap-3 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2 -mx-1 px-1"
                   >
-                    <div className="flex items-center justify-between gap-2 mb-1">
-                      <span className="text-xs font-bold text-red-400">
-                        {promo.title}
-                      </span>
-                      {promo.discount && (
-                        <span className="inline-flex items-center rounded-full bg-red-600 text-white px-2 py-0.5 text-[10px] font-bold">
-                          {promo.discount}
+                    {detail.promotions.map((promo) => (
+                      <button
+                        key={promo.id}
+                        onClick={() => setExpandedPromo(promo)}
+                        className="min-w-[220px] max-w-[75vw] flex-shrink-0 snap-start text-left rounded-xl border border-red-500/20 bg-red-500/10 p-3 hover:bg-red-500/15 active:scale-[0.98] transition-all duration-200"
+                      >
+                        <div className="flex items-center justify-between gap-2 mb-1">
+                          <span className="text-xs font-bold text-red-400 truncate">
+                            {promo.title}
+                          </span>
+                          {promo.discount && (
+                            <span className="inline-flex items-center rounded-full bg-red-600 text-white px-2 py-0.5 text-[10px] font-bold flex-shrink-0">
+                              {promo.discount}
+                            </span>
+                          )}
+                        </div>
+                        {promo.description && (
+                          <p className="text-xs text-red-400/70 line-clamp-2">
+                            {promo.description}
+                          </p>
+                        )}
+                        <p className="text-[10px] text-muted-foreground mt-1.5">Toca para ver más</p>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                {/* Desktop: vertical list */}
+                <div className="hidden lg:block space-y-2">
+                  {detail.promotions.map((promo) => (
+                    <button
+                      key={promo.id}
+                      onClick={() => setExpandedPromo(promo)}
+                      className="w-full text-left rounded-xl border border-red-500/20 bg-red-500/10 p-3 hover:bg-red-500/15 transition-colors duration-200"
+                    >
+                      <div className="flex items-center justify-between gap-2 mb-1">
+                        <span className="text-xs font-bold text-red-400">
+                          {promo.title}
                         </span>
+                        {promo.discount && (
+                          <span className="inline-flex items-center rounded-full bg-red-600 text-white px-2 py-0.5 text-[10px] font-bold">
+                            {promo.discount}
+                          </span>
+                        )}
+                      </div>
+                      {promo.description && (
+                        <p className="text-xs text-red-400/70">
+                          {promo.description}
+                        </p>
                       )}
-                    </div>
-                    {promo.description && (
-                      <p className="text-xs text-red-400/70">
-                        {promo.description}
-                      </p>
-                    )}
-                    <p className="text-[10px] text-muted-foreground mt-1.5">Toca para ver más</p>
-                  </button>
-                ))}
+                      <p className="text-[10px] text-muted-foreground mt-1.5">Toca para ver más</p>
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
 
@@ -953,7 +992,31 @@ function DetailModal({
                 <h4 className="text-sm font-semibold text-foreground">
                   Fotos y promociones
                 </h4>
-                <div className="grid grid-cols-3 gap-2">
+                {/* Mobile: horizontal scrollable strip */}
+                <div className="swipe-x no-scrollbar flex gap-2 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-1 sm:hidden"
+                >
+                  {b.gallery.map((img, i) => (
+                    <button
+                      key={i}
+                      onClick={() => {
+                        setGalleryIndex(i);
+                        setShowGallery(true);
+                      }}
+                      className="relative w-24 h-24 flex-shrink-0 snap-start rounded-lg overflow-hidden border hover:ring-2 hover:ring-primary/50 transition-all duration-200"
+                    >
+                      <Image
+                        src={img}
+                        alt={`${b.name} foto ${i + 1}`}
+                        fill
+                        className="object-cover"
+                        sizes="96px"
+                        loading="lazy"
+                      />
+                    </button>
+                  ))}
+                </div>
+                {/* Desktop: 3-column grid */}
+                <div className="hidden sm:grid grid-cols-3 gap-2">
                   {b.gallery.map((img, i) => (
                     <button
                       key={i}
@@ -1062,13 +1125,14 @@ function DetailModal({
         )}
       </DialogContent>
 
-      {/* Full-screen Gallery Lightbox */}
+      {/* Full-screen Gallery Lightbox with swipe support */}
+      <AnimatePresence>
       {showGallery && hasGallery && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[200] bg-black/95 flex items-center justify-center"
+          className="fixed inset-0 z-[200] bg-black/95 flex items-center justify-center select-none"
         >
           <button
             onClick={() => setShowGallery(false)}
@@ -1077,36 +1141,47 @@ function DetailModal({
             <X size={24} />
           </button>
           <button
-            onClick={() => setGalleryIndex((p) => (p - 1 + b.gallery.length) % b.gallery.length)}
+            onClick={(e) => { e.stopPropagation(); setGalleryIndex((p) => (p - 1 + b.gallery.length) % b.gallery.length); }}
             className="absolute left-3 sm:left-6 z-10 rounded-full bg-white/10 text-white p-2.5 hover:bg-white/20 transition-colors"
           >
             <ChevronLeft size={28} />
           </button>
           <button
-            onClick={() => setGalleryIndex((p) => (p + 1) % b.gallery.length)}
+            onClick={(e) => { e.stopPropagation(); setGalleryIndex((p) => (p + 1) % b.gallery.length); }}
             className="absolute right-3 sm:right-6 z-10 rounded-full bg-white/10 text-white p-2.5 hover:bg-white/20 transition-colors"
           >
             <ChevronRight size={28} />
           </button>
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={galleryIndex}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.2 }}
-              className="w-full h-full flex items-center justify-center p-14 sm:p-20"
-            >
-              <Image
-                src={b.gallery[galleryIndex]}
-                alt={`${b.name} foto ${galleryIndex + 1}`}
-                fill
-                className="object-contain"
-                sizes="100vw"
-              />
-            </motion.div>
-          </AnimatePresence>
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
+          {/* Swipeable image area */}
+          <motion.div
+            key={galleryIndex}
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.15}
+            onDragEnd={(_, info) => {
+              const threshold = 60;
+              if (info.offset.x < -threshold) {
+                setGalleryIndex((p) => (p + 1) % b.gallery.length);
+              } else if (info.offset.x > threshold) {
+                setGalleryIndex((p) => (p - 1 + b.gallery.length) % b.gallery.length);
+              }
+            }}
+            initial={{ opacity: 0, x: 60 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -60 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+            className="w-full h-full flex items-center justify-center p-14 sm:p-20 cursor-grab active:cursor-grabbing"
+          >
+            <Image
+              src={b.gallery[galleryIndex]}
+              alt={`${b.name} foto ${galleryIndex + 1}`}
+              fill
+              className="object-contain pointer-events-none"
+              sizes="100vw"
+              draggable={false}
+            />
+          </motion.div>
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
             {b.gallery.map((_, i) => (
               <button
                 key={i}
@@ -1117,11 +1192,12 @@ function DetailModal({
               />
             ))}
           </div>
-          <div className="absolute bottom-6 right-6 rounded-full bg-white/10 text-white px-3 py-1.5 text-sm font-medium backdrop-blur-sm">
+          <div className="absolute bottom-6 right-6 rounded-full bg-white/10 text-white px-3 py-1.5 text-sm font-medium backdrop-blur-sm z-10">
             {galleryIndex + 1} / {b.gallery.length}
           </div>
         </motion.div>
       )}
+      </AnimatePresence>
 
       {/* Expanded Promotion Modal */}
       <Dialog open={!!expandedPromo} onOpenChange={(o) => { if (!o) setExpandedPromo(null); }}>
@@ -1553,7 +1629,7 @@ export default function Home() {
         {/* ─── ZONE FILTER BAR ─── */}
         <section className="border-b border-border/40 bg-background/80 backdrop-blur-sm sticky top-14 sm:top-16 z-30">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center gap-2 py-3 overflow-x-auto no-scrollbar">
+            <div className="swipe-x flex items-center gap-2 py-3 overflow-x-auto no-scrollbar">
               {ZONES.map((zone) => (
                 <button
                   key={zone}
@@ -1588,7 +1664,7 @@ export default function Home() {
                   Destacados en Los Teques
                 </h3>
               </div>
-              <div className="flex gap-5 overflow-x-auto no-scrollbar pb-2">
+              <div className="swipe-x flex gap-5 overflow-x-auto no-scrollbar pb-2">
                 {featuredBusinesses.map((b) => (
                   <FeaturedCard
                     key={b.id}
@@ -1682,8 +1758,7 @@ export default function Home() {
                     <div className="relative">
                       <div
                         id="sidebar-promos"
-                        className="flex gap-3 overflow-x-auto scroll-smooth snap-x snap-mandatory no-scrollbar pb-1"
-                        style={{ scrollBehavior: 'smooth', WebkitOverflowScrolling: 'touch' }}
+                        className="swipe-x no-scrollbar flex gap-3 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-1"
                       >
                         {allPromotions.map((b) => (
                           <div key={b.id} className="min-w-[260px] max-w-[260px] snap-start">
@@ -1709,8 +1784,7 @@ export default function Home() {
                   </h4>
                 </div>
                 <div
-                  className="flex gap-3 overflow-x-auto scroll-smooth snap-x snap-mandatory no-scrollbar pb-2 -mx-4 px-4"
-                  style={{ WebkitOverflowScrolling: 'touch' }}
+                  className="swipe-x no-scrollbar flex gap-3 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2 -mx-4 px-4"
                 >
                   {allPromotions.map((b) => (
                     <div key={b.id} className="min-w-[280px] max-w-[85vw] snap-start">
