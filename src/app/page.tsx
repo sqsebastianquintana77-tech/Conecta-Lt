@@ -1026,9 +1026,8 @@ function DetailModal({
                 <h4 className="text-sm font-semibold text-foreground">
                   Fotos y promociones
                 </h4>
-                {/* Mobile: horizontal scrollable strip */}
-                <div className="swipe-x no-scrollbar flex gap-2 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-1 sm:hidden"
-                >
+                {/* Mobile & Desktop: grid layout — avoids CSS scroll conflict inside modal overflow-y:auto */}
+                <div className="grid grid-cols-3 gap-2">
                   {b.gallery.map((img, i) => (
                     <button
                       key={i}
@@ -1036,36 +1035,14 @@ function DetailModal({
                         setGalleryIndex(i);
                         setShowGallery(true);
                       }}
-                      className="relative w-24 h-24 flex-shrink-0 snap-start rounded-lg overflow-hidden border hover:ring-2 hover:ring-primary/50 transition-all duration-200"
+                      className="relative aspect-square rounded-lg overflow-hidden border hover:ring-2 hover:ring-primary/50 active:scale-95 transition-all duration-200"
                     >
                       <Image
                         src={img}
                         alt={`${b.name} foto ${i + 1}`}
                         fill
                         className="object-cover"
-                        sizes="96px"
-                        loading="lazy"
-                      />
-                    </button>
-                  ))}
-                </div>
-                {/* Desktop: 3-column grid */}
-                <div className="hidden sm:grid grid-cols-3 gap-2">
-                  {b.gallery.map((img, i) => (
-                    <button
-                      key={i}
-                      onClick={() => {
-                        setGalleryIndex(i);
-                        setShowGallery(true);
-                      }}
-                      className="relative aspect-square rounded-lg overflow-hidden border hover:ring-2 hover:ring-primary/50 transition-all duration-200"
-                    >
-                      <Image
-                        src={img}
-                        alt={`${b.name} foto ${i + 1}`}
-                        fill
-                        className="object-cover"
-                        sizes="150px"
+                        sizes="120px"
                         loading="lazy"
                       />
                     </button>
