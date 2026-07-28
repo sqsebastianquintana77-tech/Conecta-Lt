@@ -257,6 +257,7 @@ function BusinessCard({
             fill
             className="object-cover transition-transform duration-500 hover:scale-105"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            loading="lazy"
           />
         ) : (
           <Icon size={40} className="text-primary/25" />
@@ -395,6 +396,7 @@ function FeaturedCard({
             fill
             className="object-cover transition-transform duration-500 group-hover:scale-105"
             sizes="340px"
+            loading="lazy"
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
@@ -967,6 +969,7 @@ function DetailModal({
                         fill
                         className="object-cover"
                         sizes="150px"
+                        loading="lazy"
                       />
                     </button>
                   ))}
@@ -1666,18 +1669,28 @@ export default function Home() {
               {allPromotions.length > 0 && (
                 <aside className="hidden lg:block w-80 flex-shrink-0">
                   <div className="sticky top-36">
-                    <div className="flex items-center gap-2.5 mb-4">
-                      <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-red-500/10">
-                        <PartyPopper size={14} className="text-red-400" />
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2.5">
+                        <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-red-500/10">
+                          <PartyPopper size={14} className="text-red-400" />
+                        </div>
+                        <h4 className="text-sm font-bold text-foreground">
+                          Promociones activas
+                        </h4>
                       </div>
-                      <h4 className="text-sm font-bold text-foreground">
-                        Promociones activas
-                      </h4>
                     </div>
-                    <div className="space-y-3 max-h-[calc(100vh-12rem)] overflow-y-auto custom-scrollbar-y pr-1">
-                      {allPromotions.map((b) => (
-                        <PromotionCard key={b.id} business={b} onSelect={handleBusinessSelect} />
-                      ))}
+                    <div className="relative">
+                      <div
+                        id="sidebar-promos"
+                        className="flex gap-3 overflow-x-auto scroll-smooth snap-x snap-mandatory no-scrollbar pb-1"
+                        style={{ scrollBehavior: 'smooth', WebkitOverflowScrolling: 'touch' }}
+                      >
+                        {allPromotions.map((b) => (
+                          <div key={b.id} className="min-w-[260px] max-w-[260px] snap-start">
+                            <PromotionCard business={b} onSelect={handleBusinessSelect} />
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </aside>
@@ -1689,15 +1702,20 @@ export default function Home() {
               <div className="mt-10 lg:hidden">
                 <div className="flex items-center gap-2.5 mb-4">
                   <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-red-500/10">
-                        <PartyPopper size={14} className="text-red-400" />
+                    <PartyPopper size={14} className="text-red-400" />
                   </div>
                   <h4 className="text-sm font-bold text-foreground">
                     Promociones activas
                   </h4>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div
+                  className="flex gap-3 overflow-x-auto scroll-smooth snap-x snap-mandatory no-scrollbar pb-2 -mx-4 px-4"
+                  style={{ WebkitOverflowScrolling: 'touch' }}
+                >
                   {allPromotions.map((b) => (
-                    <PromotionCard key={b.id} business={b} onSelect={handleBusinessSelect} />
+                    <div key={b.id} className="min-w-[280px] max-w-[85vw] snap-start">
+                      <PromotionCard business={b} onSelect={handleBusinessSelect} />
+                    </div>
                   ))}
                 </div>
               </div>
