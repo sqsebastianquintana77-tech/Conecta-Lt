@@ -493,12 +493,9 @@ function DetailModal({
   const [detail, setDetail] = useState<Business | null>(null);
   const [galleryIndex, setGalleryIndex] = useState(0);
   const [showGallery, setShowGallery] = useState(false);
-  // Refs para swipe sin interferencia de Framer Motion
-  const swipeStartX = useRef(0);
-  const swipeStartY = useRef(0);
-  const galleryBtnPressed = useRef(false);
-  const promoBtnPressed = useRef(false);
-  const promoSwipeStartX = useRef(0);
+  // Debounce para navegación — impide doble-disparo en móvil
+  const galleryNavTime = useRef(0);
+  const promoNavTime = useRef(0);
   const [expandedPromo, setExpandedPromo] = useState<Promotion | null>(null);
   const [promoIndex, setPromoIndex] = useState(0);
   const [showReviewForm, setShowReviewForm] = useState(false);
@@ -933,28 +930,9 @@ function DetailModal({
                     <span className="text-[10px] text-muted-foreground lg:hidden">Desliza ← →</span>
                   )}
                 </div>
-                {/* Mobile: pointer-event carousel (NO Framer Motion drag) */}
-                <div className="lg:hidden" style={{ touchAction: 'none' }}>
-                  <div
-                    className="overflow-hidden rounded-xl"
-                    onPointerDown={(e) => {
-                      if (promoBtnPressed.current) return;
-                      promoSwipeStartX.current = e.clientX;
-                    }}
-                    onPointerUp={(e) => {
-                      if (promoBtnPressed.current) {
-                        promoBtnPressed.current = false;
-                        return;
-                      }
-                      const diff = promoSwipeStartX.current - e.clientX;
-                      const threshold = 50;
-                      if (diff > threshold && promoIndex < detail.promotions.length - 1) {
-                        setPromoIndex((p) => p + 1);
-                      } else if (diff < -threshold && promoIndex > 0) {
-                        setPromoIndex((p) => p - 1);
-                      }
-                    }}
-                  >
+                {/* Mobile: debounced CSS carousel, no gesture libs */}
+                <div className="lg:hidden">
+                  <div className="overflow-hidden rounded-xl">
                     <div
                       className="flex transition-transform duration-300 ease-out"
                       style={{ transform: `translateX(-${promoIndex * 100}%)` }}
@@ -962,7 +940,6 @@ function DetailModal({
                       {detail.promotions.map((promo) => (
                         <div key={promo.id} className="w-full flex-shrink-0 px-0.5">
                           <button
-                            onPointerDown={(e) => { e.stopPropagation(); promoBtnPressed.current = true; }}
                             onClick={() => setExpandedPromo(promo)}
                             className="w-full text-left rounded-xl border border-red-500/20 bg-red-500/10 p-3 active:scale-[0.98] transition-transform duration-200"
                           >
@@ -993,7 +970,12 @@ function DetailModal({
                       {detail.promotions.map((_, i) => (
                         <button
                           key={i}
-                          onClick={() => setPromoIndex(i)}
+                          onClick={() => {
+                            const now = Date.now();
+                            if (now - promoNavTime.current < 300) return;
+                            promoNavTime.current = now;
+                            setPromoIndex(i);
+                          }}
                           className={`h-1.5 rounded-full transition-all duration-200 ${
                             i === promoIndex
                               ? 'bg-red-400 w-4'
@@ -1150,15 +1132,21 @@ function DetailModal({
         )}
       </DialogContent>
 
-      {/* Full-screen Gallery Lightbox — plain div, NO Framer Motion gestures */}
-      {showGallery && hasGallery && (
+      {/* Full-screen Gallery Lightbox — debounced nav, no gesture libs */}
+      {showGallery && hasGallery && (() => {
+        const nav = (idx: number) => {
+          const now = Date.now();
+          if (now - galleryNavTime.current < 300) return;
+          galleryNavTime.current = now;
+          setGalleryIndex(idx);
+        };
+        return (
         <div
-          className="fixed inset-0 z-[200] bg-black/95 flex items-center justify-center select-none animate-in fade-in duration-150"
+          className="fixed inset-0 z-[200] bg-black/95 flex items-center justify-center select-none"
           style={{ touchAction: 'none' }}
         >
           {/* Close */}
           <button
-            onPointerDown={() => { galleryBtnPressed.current = true; }}
             onClick={() => setShowGallery(false)}
             className="absolute top-4 right-4 z-20 flex items-center justify-center w-12 h-12 rounded-full bg-black/50 text-white hover:bg-black/70 active:scale-90 transition-all backdrop-blur-sm"
           >
@@ -1166,49 +1154,27 @@ function DetailModal({
           </button>
           {/* Prev */}
           <button
-            onPointerDown={() => { galleryBtnPressed.current = true; }}
-            onClick={() => setGalleryIndex((p) => (p - 1 + b.gallery.length) % b.gallery.length)}
+            onClick={() => nav((galleryIndex - 1 + b.gallery.length) % b.gallery.length)}
             className="absolute left-2 sm:left-6 z-20 flex items-center justify-center w-12 h-12 rounded-full bg-black/50 text-white hover:bg-black/70 active:scale-90 transition-all backdrop-blur-sm"
           >
             <ChevronLeft size={28} />
           </button>
           {/* Next */}
           <button
-            onPointerDown={() => { galleryBtnPressed.current = true; }}
-            onClick={() => setGalleryIndex((p) => (p + 1) % b.gallery.length)}
+            onClick={() => nav((galleryIndex + 1) % b.gallery.length)}
             className="absolute right-2 sm:right-6 z-20 flex items-center justify-center w-12 h-12 rounded-full bg-black/50 text-white hover:bg-black/70 active:scale-90 transition-all backdrop-blur-sm"
           >
             <ChevronRight size={28} />
           </button>
-          {/* Swipe area — pointer events with ref lock */}
-          <div
-            className="w-full h-full flex items-center justify-center p-16 sm:p-20"
-            onPointerDown={(e) => {
-              if (galleryBtnPressed.current) return;
-              swipeStartX.current = e.clientX;
-              swipeStartY.current = e.clientY;
-            }}
-            onPointerUp={(e) => {
-              if (galleryBtnPressed.current) {
-                galleryBtnPressed.current = false;
-                return;
-              }
-              const diff = swipeStartX.current - e.clientX;
-              const diffY = Math.abs(swipeStartY.current - e.clientY);
-              // Solo procesar si fue un swipe horizontal (no diagonal)
-              if (diffY < 30) {
-                if (diff > 50) setGalleryIndex((p) => (p + 1) % b.gallery.length);
-                else if (diff < -50) setGalleryIndex((p) => (p - 1 + b.gallery.length) % b.gallery.length);
-              }
-            }}
-          >
+          {/* Image area — no event handlers, just display */}
+          <div className="w-full h-full flex items-center justify-center p-16 sm:p-20">
             <AnimatePresence mode="wait">
               <motion.div
                 key={galleryIndex}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.12 }}
+                transition={{ duration: 0.15 }}
                 className="relative w-full h-full"
               >
                 <Image
@@ -1228,8 +1194,7 @@ function DetailModal({
             {b.gallery.map((_, i) => (
               <button
                 key={i}
-                onPointerDown={() => { galleryBtnPressed.current = true; }}
-                onClick={() => setGalleryIndex(i)}
+                onClick={() => nav(i)}
                 className={`w-3 h-3 rounded-full transition-all duration-200 ${
                   i === galleryIndex ? 'bg-primary scale-125' : 'bg-white/40 hover:bg-white/60'
                 }`}
@@ -1241,7 +1206,8 @@ function DetailModal({
             {galleryIndex + 1} / {b.gallery.length}
           </div>
         </div>
-      )}
+        );
+      })()}
 
       {/* Expanded Promotion Modal */}
       <Dialog open={!!expandedPromo} onOpenChange={(o) => { if (!o) setExpandedPromo(null); }}>
