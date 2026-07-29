@@ -493,7 +493,8 @@ function DetailModal({
   const [detail, setDetail] = useState<Business | null>(null);
   const [galleryIndex, setGalleryIndex] = useState(0);
   const [showGallery, setShowGallery] = useState(false);
-  const galleryNavLock = useRef(false);
+  const touchStartX = useRef(0);
+  const touchCurrentX = useRef(0);
   const [expandedPromo, setExpandedPromo] = useState<Promotion | null>(null);
   const [promoIndex, setPromoIndex] = useState(0);
   const [showReviewForm, setShowReviewForm] = useState(false);
@@ -1137,72 +1138,56 @@ function DetailModal({
         )}
       </DialogContent>
 
-      {/* Full-screen Gallery Lightbox */}
+      {/* Full-screen Gallery Lightbox — native touch, no Framer Motion drag */}
       <AnimatePresence>
       {showGallery && hasGallery && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
+          transition={{ duration: 0.15 }}
           className="fixed inset-0 z-[200] bg-black/95 flex items-center justify-center select-none"
+          onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; touchCurrentX.current = e.touches[0].clientX; }}
+          onTouchMove={(e) => { touchCurrentX.current = e.touches[0].clientX; }}
+          onTouchEnd={() => {
+            const diff = touchStartX.current - touchCurrentX.current;
+            if (diff > 50) setGalleryIndex((p) => (p + 1) % b.gallery.length);
+            else if (diff < -50) setGalleryIndex((p) => (p - 1 + b.gallery.length) % b.gallery.length);
+          }}
         >
           {/* Close — 44px touch target */}
           <button
             onClick={() => setShowGallery(false)}
+            onTouchStart={(e) => e.stopPropagation()}
             className="absolute top-4 right-4 z-20 flex items-center justify-center w-11 h-11 rounded-full bg-white/10 text-white hover:bg-white/20 active:scale-90 transition-all"
           >
             <X size={24} />
           </button>
           {/* Prev — 44px touch target */}
           <button
-            onClick={() => {
-              galleryNavLock.current = true;
-              setGalleryIndex((p) => (p - 1 + b.gallery.length) % b.gallery.length);
-              setTimeout(() => { galleryNavLock.current = false; }, 350);
-            }}
+            onClick={() => setGalleryIndex((p) => (p - 1 + b.gallery.length) % b.gallery.length)}
+            onTouchStart={(e) => e.stopPropagation()}
             className="absolute left-3 sm:left-6 z-20 flex items-center justify-center w-11 h-11 rounded-full bg-white/10 text-white hover:bg-white/20 active:scale-90 transition-all"
           >
             <ChevronLeft size={28} />
           </button>
           {/* Next — 44px touch target */}
           <button
-            onClick={() => {
-              galleryNavLock.current = true;
-              setGalleryIndex((p) => (p + 1) % b.gallery.length);
-              setTimeout(() => { galleryNavLock.current = false; }, 350);
-            }}
+            onClick={() => setGalleryIndex((p) => (p + 1) % b.gallery.length)}
+            onTouchStart={(e) => e.stopPropagation()}
             className="absolute right-3 sm:right-6 z-20 flex items-center justify-center w-11 h-11 rounded-full bg-white/10 text-white hover:bg-white/20 active:scale-90 transition-all"
           >
             <ChevronRight size={28} />
           </button>
-          {/* Drag area — STABLE, never remounts */}
-          <motion.div
-            drag="x"
-            dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={0.15}
-            onDragEnd={(_, info) => {
-              if (galleryNavLock.current) return;
-              const threshold = 60;
-              if (info.offset.x < -threshold) {
-                galleryNavLock.current = true;
-                setGalleryIndex((p) => (p + 1) % b.gallery.length);
-                setTimeout(() => { galleryNavLock.current = false; }, 350);
-              } else if (info.offset.x > threshold) {
-                galleryNavLock.current = true;
-                setGalleryIndex((p) => (p - 1 + b.gallery.length) % b.gallery.length);
-                setTimeout(() => { galleryNavLock.current = false; }, 350);
-              }
-            }}
-            className="w-full h-full flex items-center justify-center p-14 sm:p-20 cursor-grab active:cursor-grabbing"
-          >
-            {/* Animated image swap — key triggers crossfade */}
+          {/* Image area — simple crossfade */}
+          <div className="w-full h-full flex items-center justify-center p-14 sm:p-20">
             <AnimatePresence mode="wait">
               <motion.div
                 key={galleryIndex}
-                initial={{ opacity: 0, x: 50 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -50 }}
-                transition={{ duration: 0.2, ease: 'easeOut' }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.12 }}
                 className="relative w-full h-full"
               >
                 <Image
@@ -1212,20 +1197,18 @@ function DetailModal({
                   className="object-contain pointer-events-none"
                   sizes="100vw"
                   draggable={false}
+                  priority={galleryIndex === 0}
                 />
               </motion.div>
             </AnimatePresence>
-          </motion.div>
+          </div>
           {/* Dots */}
           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-20">
             {b.gallery.map((_, i) => (
               <button
                 key={i}
-                onClick={() => {
-                  galleryNavLock.current = true;
-                  setGalleryIndex(i);
-                  setTimeout(() => { galleryNavLock.current = false; }, 350);
-                }}
+                onClick={() => setGalleryIndex(i)}
+                onTouchStart={(e) => e.stopPropagation()}
                 className={`w-2.5 h-2.5 rounded-full transition-all duration-200 ${
                   i === galleryIndex ? 'bg-primary scale-125' : 'bg-white/40 hover:bg-white/60'
                 }`}
