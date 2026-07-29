@@ -493,8 +493,12 @@ function DetailModal({
   const [detail, setDetail] = useState<Business | null>(null);
   const [galleryIndex, setGalleryIndex] = useState(0);
   const [showGallery, setShowGallery] = useState(false);
-  const touchStartX = useRef(0);
-  const touchCurrentX = useRef(0);
+  // Refs para swipe sin interferencia de Framer Motion
+  const swipeStartX = useRef(0);
+  const swipeStartY = useRef(0);
+  const galleryBtnPressed = useRef(false);
+  const promoBtnPressed = useRef(false);
+  const promoSwipeStartX = useRef(0);
   const [expandedPromo, setExpandedPromo] = useState<Promotion | null>(null);
   const [promoIndex, setPromoIndex] = useState(0);
   const [showReviewForm, setShowReviewForm] = useState(false);
@@ -929,28 +933,36 @@ function DetailModal({
                     <span className="text-[10px] text-muted-foreground lg:hidden">Desliza ← →</span>
                   )}
                 </div>
-                {/* Mobile: Framer Motion drag carousel */}
-                <div className="lg:hidden" onPointerDownCapture={(e) => e.stopPropagation()}>
-                  <div className="overflow-hidden rounded-xl">
-                    <motion.div
-                      drag="x"
-                      dragMomentum={false}
-                      dragElastic={0.15}
-                      onDragEnd={(_, info) => {
-                        const threshold = 50;
-                        if (info.offset.x < -threshold && promoIndex < detail.promotions.length - 1) {
-                          setPromoIndex((p) => p + 1);
-                        } else if (info.offset.x > threshold && promoIndex > 0) {
-                          setPromoIndex((p) => p - 1);
-                        }
-                      }}
-                      animate={{ x: `-${promoIndex * 100}%` }}
-                      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                      className="flex cursor-grab active:cursor-grabbing"
+                {/* Mobile: pointer-event carousel (NO Framer Motion drag) */}
+                <div className="lg:hidden" style={{ touchAction: 'none' }}>
+                  <div
+                    className="overflow-hidden rounded-xl"
+                    onPointerDown={(e) => {
+                      if (promoBtnPressed.current) return;
+                      promoSwipeStartX.current = e.clientX;
+                    }}
+                    onPointerUp={(e) => {
+                      if (promoBtnPressed.current) {
+                        promoBtnPressed.current = false;
+                        return;
+                      }
+                      const diff = promoSwipeStartX.current - e.clientX;
+                      const threshold = 50;
+                      if (diff > threshold && promoIndex < detail.promotions.length - 1) {
+                        setPromoIndex((p) => p + 1);
+                      } else if (diff < -threshold && promoIndex > 0) {
+                        setPromoIndex((p) => p - 1);
+                      }
+                    }}
+                  >
+                    <div
+                      className="flex transition-transform duration-300 ease-out"
+                      style={{ transform: `translateX(-${promoIndex * 100}%)` }}
                     >
                       {detail.promotions.map((promo) => (
                         <div key={promo.id} className="w-full flex-shrink-0 px-0.5">
                           <button
+                            onPointerDown={(e) => { e.stopPropagation(); promoBtnPressed.current = true; }}
                             onClick={() => setExpandedPromo(promo)}
                             className="w-full text-left rounded-xl border border-red-500/20 bg-red-500/10 p-3 active:scale-[0.98] transition-transform duration-200"
                           >
@@ -973,7 +985,7 @@ function DetailModal({
                           </button>
                         </div>
                       ))}
-                    </motion.div>
+                    </div>
                   </div>
                   {/* Dots indicator */}
                   {detail.promotions.length > 1 && (
@@ -1138,49 +1150,57 @@ function DetailModal({
         )}
       </DialogContent>
 
-      {/* Full-screen Gallery Lightbox — native touch, no drag */}
-      <AnimatePresence>
+      {/* Full-screen Gallery Lightbox — plain div, NO Framer Motion gestures */}
       {showGallery && hasGallery && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.15 }}
-          className="fixed inset-0 z-[200] bg-black/95 flex items-center justify-center select-none"
+        <div
+          className="fixed inset-0 z-[200] bg-black/95 flex items-center justify-center select-none animate-in fade-in duration-150"
+          style={{ touchAction: 'none' }}
         >
           {/* Close */}
           <button
-            onClick={(e) => { e.stopPropagation(); setShowGallery(false); }}
-            onTouchStart={(e) => e.stopPropagation()}
-            onTouchEnd={(e) => e.stopPropagation()}
+            onPointerDown={() => { galleryBtnPressed.current = true; }}
+            onClick={() => setShowGallery(false)}
             className="absolute top-4 right-4 z-20 flex items-center justify-center w-12 h-12 rounded-full bg-black/50 text-white hover:bg-black/70 active:scale-90 transition-all backdrop-blur-sm"
           >
             <X size={24} />
           </button>
           {/* Prev */}
           <button
-            onClick={(e) => { e.stopPropagation(); setGalleryIndex((p) => (p - 1 + b.gallery.length) % b.gallery.length); }}
-            onTouchStart={(e) => e.stopPropagation()}
-            onTouchEnd={(e) => e.stopPropagation()}
+            onPointerDown={() => { galleryBtnPressed.current = true; }}
+            onClick={() => setGalleryIndex((p) => (p - 1 + b.gallery.length) % b.gallery.length)}
             className="absolute left-2 sm:left-6 z-20 flex items-center justify-center w-12 h-12 rounded-full bg-black/50 text-white hover:bg-black/70 active:scale-90 transition-all backdrop-blur-sm"
           >
             <ChevronLeft size={28} />
           </button>
           {/* Next */}
           <button
-            onClick={(e) => { e.stopPropagation(); setGalleryIndex((p) => (p + 1) % b.gallery.length); }}
-            onTouchStart={(e) => e.stopPropagation()}
-            onTouchEnd={(e) => e.stopPropagation()}
+            onPointerDown={() => { galleryBtnPressed.current = true; }}
+            onClick={() => setGalleryIndex((p) => (p + 1) % b.gallery.length)}
             className="absolute right-2 sm:right-6 z-20 flex items-center justify-center w-12 h-12 rounded-full bg-black/50 text-white hover:bg-black/70 active:scale-90 transition-all backdrop-blur-sm"
           >
             <ChevronRight size={28} />
           </button>
-          {/* Image area */}
+          {/* Swipe area — pointer events with ref lock */}
           <div
             className="w-full h-full flex items-center justify-center p-16 sm:p-20"
-            onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
-            onTouchMove={(e) => { touchCurrentX.current = e.touches[0].clientX; }}
-            onTouchEnd={(e) => { e.stopPropagation(); const diff = touchStartX.current - touchCurrentX.current; if (diff > 50) setGalleryIndex((p) => (p + 1) % b.gallery.length); else if (diff < -50) setGalleryIndex((p) => (p - 1 + b.gallery.length) % b.gallery.length); }}
+            onPointerDown={(e) => {
+              if (galleryBtnPressed.current) return;
+              swipeStartX.current = e.clientX;
+              swipeStartY.current = e.clientY;
+            }}
+            onPointerUp={(e) => {
+              if (galleryBtnPressed.current) {
+                galleryBtnPressed.current = false;
+                return;
+              }
+              const diff = swipeStartX.current - e.clientX;
+              const diffY = Math.abs(swipeStartY.current - e.clientY);
+              // Solo procesar si fue un swipe horizontal (no diagonal)
+              if (diffY < 30) {
+                if (diff > 50) setGalleryIndex((p) => (p + 1) % b.gallery.length);
+                else if (diff < -50) setGalleryIndex((p) => (p - 1 + b.gallery.length) % b.gallery.length);
+              }
+            }}
           >
             <AnimatePresence mode="wait">
               <motion.div
@@ -1208,9 +1228,8 @@ function DetailModal({
             {b.gallery.map((_, i) => (
               <button
                 key={i}
+                onPointerDown={() => { galleryBtnPressed.current = true; }}
                 onClick={() => setGalleryIndex(i)}
-                onTouchStart={(e) => e.stopPropagation()}
-                onTouchEnd={(e) => e.stopPropagation()}
                 className={`w-3 h-3 rounded-full transition-all duration-200 ${
                   i === galleryIndex ? 'bg-primary scale-125' : 'bg-white/40 hover:bg-white/60'
                 }`}
@@ -1221,9 +1240,8 @@ function DetailModal({
           <div className="absolute bottom-6 right-6 rounded-full bg-black/50 text-white px-3 py-1.5 text-sm font-medium backdrop-blur-sm z-20">
             {galleryIndex + 1} / {b.gallery.length}
           </div>
-        </motion.div>
+        </div>
       )}
-      </AnimatePresence>
 
       {/* Expanded Promotion Modal */}
       <Dialog open={!!expandedPromo} onOpenChange={(o) => { if (!o) setExpandedPromo(null); }}>
