@@ -1138,7 +1138,7 @@ function DetailModal({
         )}
       </DialogContent>
 
-      {/* Full-screen Gallery Lightbox — native touch, no Framer Motion drag */}
+      {/* Full-screen Gallery Lightbox — native touch, no drag */}
       <AnimatePresence>
       {showGallery && hasGallery && (
         <motion.div
@@ -1147,40 +1147,41 @@ function DetailModal({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.15 }}
           className="fixed inset-0 z-[200] bg-black/95 flex items-center justify-center select-none"
-          onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; touchCurrentX.current = e.touches[0].clientX; }}
-          onTouchMove={(e) => { touchCurrentX.current = e.touches[0].clientX; }}
-          onTouchEnd={() => {
-            const diff = touchStartX.current - touchCurrentX.current;
-            if (diff > 50) setGalleryIndex((p) => (p + 1) % b.gallery.length);
-            else if (diff < -50) setGalleryIndex((p) => (p - 1 + b.gallery.length) % b.gallery.length);
-          }}
         >
-          {/* Close — 44px touch target */}
+          {/* Close */}
           <button
-            onClick={() => setShowGallery(false)}
+            onClick={(e) => { e.stopPropagation(); setShowGallery(false); }}
             onTouchStart={(e) => e.stopPropagation()}
-            className="absolute top-4 right-4 z-20 flex items-center justify-center w-11 h-11 rounded-full bg-white/10 text-white hover:bg-white/20 active:scale-90 transition-all"
+            onTouchEnd={(e) => e.stopPropagation()}
+            className="absolute top-4 right-4 z-20 flex items-center justify-center w-12 h-12 rounded-full bg-black/50 text-white hover:bg-black/70 active:scale-90 transition-all backdrop-blur-sm"
           >
             <X size={24} />
           </button>
-          {/* Prev — 44px touch target */}
+          {/* Prev */}
           <button
-            onClick={() => setGalleryIndex((p) => (p - 1 + b.gallery.length) % b.gallery.length)}
+            onClick={(e) => { e.stopPropagation(); setGalleryIndex((p) => (p - 1 + b.gallery.length) % b.gallery.length); }}
             onTouchStart={(e) => e.stopPropagation()}
-            className="absolute left-3 sm:left-6 z-20 flex items-center justify-center w-11 h-11 rounded-full bg-white/10 text-white hover:bg-white/20 active:scale-90 transition-all"
+            onTouchEnd={(e) => e.stopPropagation()}
+            className="absolute left-2 sm:left-6 z-20 flex items-center justify-center w-12 h-12 rounded-full bg-black/50 text-white hover:bg-black/70 active:scale-90 transition-all backdrop-blur-sm"
           >
             <ChevronLeft size={28} />
           </button>
-          {/* Next — 44px touch target */}
+          {/* Next */}
           <button
-            onClick={() => setGalleryIndex((p) => (p + 1) % b.gallery.length)}
+            onClick={(e) => { e.stopPropagation(); setGalleryIndex((p) => (p + 1) % b.gallery.length); }}
             onTouchStart={(e) => e.stopPropagation()}
-            className="absolute right-3 sm:right-6 z-20 flex items-center justify-center w-11 h-11 rounded-full bg-white/10 text-white hover:bg-white/20 active:scale-90 transition-all"
+            onTouchEnd={(e) => e.stopPropagation()}
+            className="absolute right-2 sm:right-6 z-20 flex items-center justify-center w-12 h-12 rounded-full bg-black/50 text-white hover:bg-black/70 active:scale-90 transition-all backdrop-blur-sm"
           >
             <ChevronRight size={28} />
           </button>
-          {/* Image area — simple crossfade */}
-          <div className="w-full h-full flex items-center justify-center p-14 sm:p-20">
+          {/* Image area */}
+          <div
+            className="w-full h-full flex items-center justify-center p-16 sm:p-20"
+            onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
+            onTouchMove={(e) => { touchCurrentX.current = e.touches[0].clientX; }}
+            onTouchEnd={(e) => { e.stopPropagation(); const diff = touchStartX.current - touchCurrentX.current; if (diff > 50) setGalleryIndex((p) => (p + 1) % b.gallery.length); else if (diff < -50) setGalleryIndex((p) => (p - 1 + b.gallery.length) % b.gallery.length); }}
+          >
             <AnimatePresence mode="wait">
               <motion.div
                 key={galleryIndex}
@@ -1209,14 +1210,15 @@ function DetailModal({
                 key={i}
                 onClick={() => setGalleryIndex(i)}
                 onTouchStart={(e) => e.stopPropagation()}
-                className={`w-2.5 h-2.5 rounded-full transition-all duration-200 ${
+                onTouchEnd={(e) => e.stopPropagation()}
+                className={`w-3 h-3 rounded-full transition-all duration-200 ${
                   i === galleryIndex ? 'bg-primary scale-125' : 'bg-white/40 hover:bg-white/60'
                 }`}
               />
             ))}
           </div>
           {/* Counter */}
-          <div className="absolute bottom-6 right-6 rounded-full bg-white/10 text-white px-3 py-1.5 text-sm font-medium backdrop-blur-sm z-20">
+          <div className="absolute bottom-6 right-6 rounded-full bg-black/50 text-white px-3 py-1.5 text-sm font-medium backdrop-blur-sm z-20">
             {galleryIndex + 1} / {b.gallery.length}
           </div>
         </motion.div>
