@@ -26,18 +26,32 @@ export async function GET(
       return NextResponse.json({ error: 'Negocio no encontrado' }, { status: 404 });
     }
 
-    // Fetch promotions for this business
-    const { data: promotions } = await supabaseAdmin
+    // Fetch promotions from Supabase
+    const { data: supabasePromotions } = await supabaseAdmin
       .from('Promotion')
       .select('*')
       .eq('businessId', business.id);
 
-    // Fetch static (seeded) reviews
-    const { enrichedReviews } = await import('@/lib/static-data');
+    // Fetch static data (has gallery + extra promotions)
+    const { allBusinesses, enrichedReviews } = await import('@/lib/static-data');
+    const staticBiz = allBusinesses.find((b) => b.id === business.id);
+
+    // Merge gallery: static images if Supabase has none
+    const supabaseGallery = Array.isArray(business.gallery) ? business.gallery : [];
+    const staticGallery = staticBiz?.gallery ?? [];
+    const mergedGallery = supabaseGallery.length > 0 ? supabaseGallery : staticGallery;
+
+    // Merge promotions: Supabase first, then fill gaps with static
+    const dbPromos = supabasePromotions ?? [];
+    const staticPromos = staticBiz?.promotions ?? [];
+    const dbTitles = new Set(dbPromos.map((p: { title: string }) => p.title));
+    const extraPromos = staticPromos.filter((p: { title: string }) => !dbTitles.has(p.title));
+    const mergedPromotions = [...dbPromos, ...extraPromos];
 
     const enriched = {
       ...business,
-      promotions: promotions ?? [],
+      gallery: mergedGallery,
+      promotions: mergedPromotions,
       reviews: enrichedReviews.filter((r) => r.businessId === business.id),
     };
 
