@@ -493,6 +493,7 @@ function DetailModal({
   const [detail, setDetail] = useState<Business | null>(null);
   const [galleryIndex, setGalleryIndex] = useState(0);
   const [showGallery, setShowGallery] = useState(false);
+  const galleryNavLock = useRef(false);
   const [expandedPromo, setExpandedPromo] = useState<Promotion | null>(null);
   const [promoIndex, setPromoIndex] = useState(0);
   const [showReviewForm, setShowReviewForm] = useState(false);
@@ -1136,7 +1137,7 @@ function DetailModal({
         )}
       </DialogContent>
 
-      {/* Full-screen Gallery Lightbox with swipe support */}
+      {/* Full-screen Gallery Lightbox */}
       <AnimatePresence>
       {showGallery && hasGallery && (
         <motion.div
@@ -1145,65 +1146,94 @@ function DetailModal({
           exit={{ opacity: 0 }}
           className="fixed inset-0 z-[200] bg-black/95 flex items-center justify-center select-none"
         >
+          {/* Close — 44px touch target */}
           <button
             onClick={() => setShowGallery(false)}
-            className="absolute top-4 right-4 z-10 rounded-full bg-white/10 text-white p-2 hover:bg-white/20 transition-colors"
+            className="absolute top-4 right-4 z-20 flex items-center justify-center w-11 h-11 rounded-full bg-white/10 text-white hover:bg-white/20 active:scale-90 transition-all"
           >
             <X size={24} />
           </button>
+          {/* Prev — 44px touch target */}
           <button
-            onClick={(e) => { e.stopPropagation(); setGalleryIndex((p) => (p - 1 + b.gallery.length) % b.gallery.length); }}
-            className="absolute left-3 sm:left-6 z-10 rounded-full bg-white/10 text-white p-2.5 hover:bg-white/20 transition-colors"
+            onClick={() => {
+              galleryNavLock.current = true;
+              setGalleryIndex((p) => (p - 1 + b.gallery.length) % b.gallery.length);
+              setTimeout(() => { galleryNavLock.current = false; }, 350);
+            }}
+            className="absolute left-3 sm:left-6 z-20 flex items-center justify-center w-11 h-11 rounded-full bg-white/10 text-white hover:bg-white/20 active:scale-90 transition-all"
           >
             <ChevronLeft size={28} />
           </button>
+          {/* Next — 44px touch target */}
           <button
-            onClick={(e) => { e.stopPropagation(); setGalleryIndex((p) => (p + 1) % b.gallery.length); }}
-            className="absolute right-3 sm:right-6 z-10 rounded-full bg-white/10 text-white p-2.5 hover:bg-white/20 transition-colors"
+            onClick={() => {
+              galleryNavLock.current = true;
+              setGalleryIndex((p) => (p + 1) % b.gallery.length);
+              setTimeout(() => { galleryNavLock.current = false; }, 350);
+            }}
+            className="absolute right-3 sm:right-6 z-20 flex items-center justify-center w-11 h-11 rounded-full bg-white/10 text-white hover:bg-white/20 active:scale-90 transition-all"
           >
             <ChevronRight size={28} />
           </button>
-          {/* Swipeable image area */}
+          {/* Drag area — STABLE, never remounts */}
           <motion.div
-            key={galleryIndex}
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
             dragElastic={0.15}
             onDragEnd={(_, info) => {
+              if (galleryNavLock.current) return;
               const threshold = 60;
               if (info.offset.x < -threshold) {
+                galleryNavLock.current = true;
                 setGalleryIndex((p) => (p + 1) % b.gallery.length);
+                setTimeout(() => { galleryNavLock.current = false; }, 350);
               } else if (info.offset.x > threshold) {
+                galleryNavLock.current = true;
                 setGalleryIndex((p) => (p - 1 + b.gallery.length) % b.gallery.length);
+                setTimeout(() => { galleryNavLock.current = false; }, 350);
               }
             }}
-            initial={{ opacity: 0, x: 60 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -60 }}
-            transition={{ duration: 0.25, ease: 'easeOut' }}
             className="w-full h-full flex items-center justify-center p-14 sm:p-20 cursor-grab active:cursor-grabbing"
           >
-            <Image
-              src={b.gallery[galleryIndex]}
-              alt={`${b.name} foto ${galleryIndex + 1}`}
-              fill
-              className="object-contain pointer-events-none"
-              sizes="100vw"
-              draggable={false}
-            />
+            {/* Animated image swap — key triggers crossfade */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={galleryIndex}
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -50 }}
+                transition={{ duration: 0.2, ease: 'easeOut' }}
+                className="relative w-full h-full"
+              >
+                <Image
+                  src={b.gallery[galleryIndex]}
+                  alt={`${b.name} foto ${galleryIndex + 1}`}
+                  fill
+                  className="object-contain pointer-events-none"
+                  sizes="100vw"
+                  draggable={false}
+                />
+              </motion.div>
+            </AnimatePresence>
           </motion.div>
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+          {/* Dots */}
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-20">
             {b.gallery.map((_, i) => (
               <button
                 key={i}
-                onClick={() => setGalleryIndex(i)}
+                onClick={() => {
+                  galleryNavLock.current = true;
+                  setGalleryIndex(i);
+                  setTimeout(() => { galleryNavLock.current = false; }, 350);
+                }}
                 className={`w-2.5 h-2.5 rounded-full transition-all duration-200 ${
                   i === galleryIndex ? 'bg-primary scale-125' : 'bg-white/40 hover:bg-white/60'
                 }`}
               />
             ))}
           </div>
-          <div className="absolute bottom-6 right-6 rounded-full bg-white/10 text-white px-3 py-1.5 text-sm font-medium backdrop-blur-sm z-10">
+          {/* Counter */}
+          <div className="absolute bottom-6 right-6 rounded-full bg-white/10 text-white px-3 py-1.5 text-sm font-medium backdrop-blur-sm z-20">
             {galleryIndex + 1} / {b.gallery.length}
           </div>
         </motion.div>
